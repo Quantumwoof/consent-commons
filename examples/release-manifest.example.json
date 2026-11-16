@@ -1,0 +1,186 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/release-manifest.v1.json",
+  "manifest_version": "1.0.0",
+  "release_id": "rel_demo_ibadan_mood",
+  "commons": {
+    "id": "commons-demo-ng",
+    "name": "Consent Commons demo (synthetic)"
+  },
+  "released_at": "2026-10-28T08:00:00.000Z",
+  "recipient": {
+    "name": "Dr. A. Example (fictional)",
+    "organisation": "Fictional Public Health Lab, Ibadan",
+    "type": "nigerian_public_researchers",
+    "country": "NG"
+  },
+  "request": {
+    "request_id": "ar_demo_ibadan_mood",
+    "version": 1,
+    "request_digest": "00b1f368edd1a5c6f60974f7179a7623e47b6c869b000e0137e1548099498877"
+  },
+  "approval": {
+    "decision_entry": "9edf0b14e90b29ad732ed8b6f66681f0ff4767822c63cec1b0163d397dec3280",
+    "tally": {
+      "outcome": "approved",
+      "approvals": 3,
+      "rejections": 0,
+      "community_approvals": 2,
+      "community_seats": 3,
+      "voted": 3,
+      "seats": 5
+    },
+    "vote_entries": [
+      "bff6b4b41f25f0f2c4719dd0b0008c5864985c44761be112beb1796c70d5bd1c",
+      "ce9a47db50d61a0a7cce1a9e34c37401dd8deba7194200786ca87567eba70d36",
+      "5e30744ef6674b5579066aec4eb1162c9200cb36fbb80bfae8fa1a3ffea71883"
+    ]
+  },
+  "terms": {
+    "purpose": "public_health_research",
+    "purpose_description": "Understand how mood and worry scores differ by age band and state among young people using community support, to plan where more trained facilitators are needed.",
+    "data_categories": [
+      "screening_scores",
+      "demographics"
+    ],
+    "deidentification": "aggregated_only",
+    "cross_border_transfer": false,
+    "access_ends_at": "2027-10-28T08:00:00.000Z",
+    "onward_sharing": false,
+    "reidentification_attempts": "forbidden",
+    "on_expiry": "delete all copies and confirm to the commons",
+    "on_withdrawal_notice": "delete the named record within 30 days and confirm",
+    "consent_scope": {
+      "purposes_allowed": [
+        "service_improvement",
+        "public_health_research"
+      ],
+      "data_categories": [
+        "demographics",
+        "screening_scores"
+      ],
+      "permitted_users": [
+        "commons_stewards",
+        "nigerian_public_researchers"
+      ],
+      "deidentification": "aggregated_only",
+      "cross_border_transfer": false,
+      "benefit_sharing_required": [
+        "results_back",
+        "local_capacity",
+        "open_access",
+        "community_credit"
+      ],
+      "earliest_expiry": "2028-10-02T11:00:00.000Z",
+      "withdrawal": {
+        "allowed": true,
+        "recipient_deletion_days": 30
+      }
+    }
+  },
+  "obligations": [
+    {
+      "code": "results_back",
+      "description": "Results returned to the community in plain language",
+      "due": "2027-10-28T08:00:00.000Z"
+    },
+    {
+      "code": "open_access",
+      "description": "Findings published free for anyone to read",
+      "due": "2027-10-28T08:00:00.000Z"
+    },
+    {
+      "code": "community_credit",
+      "description": "The community is credited (acknowledgement or co-authorship)",
+      "due": "2027-10-28T08:00:00.000Z"
+    },
+    {
+      "code": "local_capacity",
+      "description": "Paid training or jobs for local researchers or health workers",
+      "due": "2027-10-28T08:00:00.000Z"
+    }
+  ],
+  "records": [
+    {
+      "record_id": "r_051460483bd2b8bb",
+      "terms_digest": "9c13af1bf8fcbf632b610a79a4941b44db70474a49addce791e0fb6920b22d70"
+    },
+    {
+      "record_id": "r_088f735735b620a4",
+      "terms_digest": "bd70033daf2a2107c1188e53873e9585881e0e6878fc5264456f0ba8278ba389"
+    },
+    {
+      "record_id": "r_0f29e36b23a3e082",
+      "terms_digest": "1e741f57e47604e678d7f9b460425424e08146e767fd3db82dd9770c6b8e141b"
+    },
+    {
+      "record_id": "r_1eeafe69f3ccfc02",
+      "terms_digest": "230bb4cea700d8127f49d173b8eccdb3144fe3a2e30eeb75c7357328fc8d8af5"
+    },
+    {
+      "record_id": "r_41a1448ae2c70b99",
+      "terms_digest": "911f83ac847f5042e875a3b9458b302c32808482a528952dc74784ee770c3bf1"
+    },
+    {
+      "record_id": "r_53c66ca1a3191ccb",
+      "terms_digest": "7d4f4f0c49751e6b9dc4e6976b16cd7fb2189aef56a9db3e332e7b59845c4d47"
+    },
+    {
+      "record_id": "r_6a593418a9dd1882",
+      "terms_digest": "4c35676035355321e47d03cf94cbb513aae1c03a6a5808f7996e0e8d22c136aa"
+    },
+    {
+      "record_id": "r_7619172a133d6f58",
+      "terms_digest": "6eed21b1c3a2a117873139f5884f66e66b86eb4dfbd4be6cf2101d9fc87eb3f1"
+    },
+    {
+      "record_id": "r_7bacedd6ecbfa01d",
+      "terms_digest": "54173a125863c2946d17073fbbe72c1e38d8acb61677ff305b470bf7dd4a5332"
+    },
+    {
+      "record_id": "r_97a9ffc9c36e0ba8",
+      "terms_digest": "ba8cebc9ca48b4e036d34ab9479548d644d42c8c2ef676571b916ba477fdcbd1"
+    },
+    {
+      "record_id": "r_a891c0e3b28af987",
+      "terms_digest": "c53484eddf345433c94166b0fdaeed58cc8dc231d8545d41098873d1acd1d6ac"
+    },
+    {
+      "record_id": "r_b03e97d161846a89",
+      "terms_digest": "7049617c8836d87512686405f1b8a9ddfa47389df84429e24c5567e90e248f32"
+    },
+    {
+      "record_id": "r_bfa342fc7121da27",
+      "terms_digest": "3bdabb26687bff1c6c0983f1b314a9e0e14e8ffb25aa6ec70c607b862fbe1bf5"
+    },
+    {
+      "record_id": "r_c60e2747cb329e79",
+      "terms_digest": "47db18090282a868f48a143e65639862861faafe6cdc9d2aa812809736a94900"
+    },
+    {
+      "record_id": "r_c7266072b6efb110",
+      "terms_digest": "910139dafe8280f5a895e91ab95738aea0704b497ee8764acf24f45a564dcfb7"
+    },
+    {
+      "record_id": "r_e09c1236c140215b",
+      "terms_digest": "016d59f8ea72727da9d60b198514b94ca659c56660f083f96d7e6b1f1e9bd6f3"
+    },
+    {
+      "record_id": "r_eaa56962251740b9",
+      "terms_digest": "3147ca3d3a1c4a91a1d9716dee7a49ede5fa8b61197b87a351186fd3ec063231"
+    }
+  ],
+  "record_count": 17,
+  "dataset_digest": "735b271e0bbfd8283bd7c7e7488059312913c272b14af4674ab36743ff77247e",
+  "ledger_head_before_release": "9edf0b14e90b29ad732ed8b6f66681f0ff4767822c63cec1b0163d397dec3280",
+  "synthetic": true,
+  "signature": {
+    "alg": "Ed25519",
+    "key_id": "ced4865d26ccdd32",
+    "public_key": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "ESCiaZxnQFkpnuiF9C6ljHeXuwZM47Ht7pyknuMV2do"
+    },
+    "value": "U9_bp1Bu8qlMpXiwcSkYwqhw7ysKp3ZV0e3bRxN-GHpmz467WFnf2QP4YlyudD-zP5NFDqt8nv9N4KE-7VqiAA"
+  }
+}

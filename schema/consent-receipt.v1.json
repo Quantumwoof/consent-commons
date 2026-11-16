@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/consent-receipt.v1.json",
+  "title": "Consent or withdrawal receipt v1",
+  "description": "What a person keeps. Proves what they agreed to (or withdrew), when, and where it sits in the ledger. Signed by the commons.",
+  "type": "object",
+  "required": [
+    "receipt_version",
+    "kind",
+    "commons",
+    "ledger_entry",
+    "issued_at",
+    "terms_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "1.0.0"
+    },
+    "kind": {
+      "enum": [
+        "consent_receipt",
+        "withdrawal_receipt"
+      ]
+    },
+    "commons": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "terms": {
+      "$ref": "consent-terms.v1.json"
+    },
+    "terms_id": {
+      "type": "string"
+    },
+    "terms_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "downstream_notices": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ledger_entry": {
+      "type": "object",
+      "required": [
+        "seq",
+        "ts",
+        "type",
+        "hash",
+        "prev"
+      ],
+      "properties": {
+        "seq": {
+          "type": "integer"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "type": {
+          "enum": [
+            "GENESIS",
+            "CONSENT_GRANTED",
+            "CONSENT_WITHDRAWN",
+            "ACCESS_REQUESTED",
+            "REVIEW_VOTE",
+            "ACCESS_DECIDED",
+            "DATA_RELEASED",
+            "WITHDRAWAL_NOTICE_ISSUED",
+            "BENEFIT_DELIVERED"
+          ]
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "prev": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "signature": {
+      "type": "object",
+      "required": [
+        "alg",
+        "key_id",
+        "public_key",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "Ed25519 signature over the canonical JSON (sorted keys, no whitespace) of the document without this field.",
+      "properties": {
+        "alg": {
+          "const": "Ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "public_key": {
+          "type": "object",
+          "required": [
+            "kty",
+            "crv",
+            "x"
+          ],
+          "properties": {
+            "kty": {
+              "const": "OKP"
+            },
+            "crv": {
+              "const": "Ed25519"
+            },
+            "x": {
+              "type": "string"
+            }
+          }
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "withdrawal_code": {
+      "type": "string",
+      "description": "Private. Only in the copy the person downloads; never stored by the commons."
+    }
+  }
+}

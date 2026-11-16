@@ -1,0 +1,8 @@
+{
+  "note": "Example only. Real receipts are issued and signed by the chat at the moment of consent.",
+  "terms_digest": "3c41681e4275e828fd5fd98ce69874c6cc0644d384daaddf86d83bda292218ef",
+  "ledger_entry": {
+    "seq": 60,
+    "hash": "af9163ecc3156b1314ef47f1dbbba26b2984417c22d730ada7719db3613b6d81"
+  }
+}

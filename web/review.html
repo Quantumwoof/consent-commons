@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access review · Consent Commons (synthetic demo)</title>
+<meta name="description" content="Researchers request data; automatic checks enforce consent terms; a community panel with quorum approves or rejects, with every vote bound to the request digest.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:review-->
+<main class="wrap">
+  <div class="row" style="margin-bottom:.5rem">
+    <h1 style="margin:0">Access review</h1><span class="spacer"></span>
+    <span class="small muted" id="acting-note">Demo: you can act as any panel seat. A real deployment gives each reviewer their own sign-in and key.</span>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="requests" aria-selected="true">Requests</button>
+    <button role="tab" data-tab="new" aria-selected="false">New request</button>
+    <button role="tab" data-tab="releases" aria-selected="false">Releases &amp; benefits</button>
+    <button role="tab" data-tab="pool" aria-selected="false">Consent pool</button>
+    <button role="tab" data-tab="rules" aria-selected="false">Panel rules</button>
+  </div>
+  <section id="tab-requests" class="layout"><div class="req-list" id="req-list"></div><div id="req-detail"></div></section>
+  <section id="tab-new" hidden></section>
+  <section id="tab-releases" hidden></section>
+  <section id="tab-pool" hidden></section>
+  <section id="tab-rules" hidden></section>
+</main>
+<script type="module" src="/js/review.js"></script>
+</body>
+</html>

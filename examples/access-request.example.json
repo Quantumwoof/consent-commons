@@ -1,0 +1,29 @@
+{
+  "request_id": "ar_demo_ibadan_mood",
+  "requester": {
+    "name": "Dr. A. Example (fictional)",
+    "organisation": "Fictional Public Health Lab, Ibadan",
+    "type": "nigerian_public_researchers",
+    "country": "NG"
+  },
+  "purpose": {
+    "code": "public_health_research",
+    "description": "Understand how mood and worry scores differ by age band and state among young people using community support, to plan where more trained facilitators are needed."
+  },
+  "data_categories": [
+    "screening_scores",
+    "demographics"
+  ],
+  "deidentification": "aggregated_only",
+  "duration_days": 365,
+  "cross_border_transfer": false,
+  "benefit_commitments": [
+    "results_back",
+    "open_access",
+    "community_credit",
+    "local_capacity"
+  ],
+  "benefit_description": "Plain-language results session with the youth panel in Ibadan and Abuja; open-access paper; two paid research-assistant roles for local CHWs.",
+  "version": 1,
+  "submitted_at": "2026-10-22T08:00:00.000Z"
+}

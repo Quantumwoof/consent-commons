@@ -1,0 +1,23 @@
+{
+  "name": "consent-commons",
+  "version": "0.1.0",
+  "description": "Community-owned consent, access review and benefit-sharing for a mental-health data commons. Portable consent terms, a Pidgin/Yoruba/English consent chat, a hash-chained ledger and a community review panel. Synthetic data only.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Joshua Jubelo <caughtsight007@gmail.com>",
+  "repository": { "type": "git", "url": "git+https://github.com/Quantumwoof/consent-commons.git" },
+  "engines": { "node": ">=20" },
+  "bin": { "commons": "bin/commons.js" },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/build.js && node scripts/serve.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "seed": "node bin/commons.js seed --out examples/demo-ledger.jsonl",
+    "verify": "node bin/commons.js verify examples/demo-ledger.jsonl"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "keywords": ["consent", "data-commons", "data-governance", "mental-health", "nigeria", "pidgin", "yoruba", "benefit-sharing", "hash-chain", "audit-log"]
+}

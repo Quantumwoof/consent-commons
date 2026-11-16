@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/ledger-entry.v1.json",
+  "title": "Ledger entry v1",
+  "description": "One line of the append-only ledger (JSON Lines). hash = SHA-256 of the canonical JSON of every other field; prev = hash of the entry before (64 zeros for the first).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "seq",
+    "ts",
+    "type",
+    "actor",
+    "data",
+    "prev",
+    "hash"
+  ],
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "enum": [
+        "GENESIS",
+        "CONSENT_GRANTED",
+        "CONSENT_WITHDRAWN",
+        "ACCESS_REQUESTED",
+        "REVIEW_VOTE",
+        "ACCESS_DECIDED",
+        "DATA_RELEASED",
+        "WITHDRAWAL_NOTICE_ISSUED",
+        "BENEFIT_DELIVERED"
+      ]
+    },
+    "actor": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object"
+    },
+    "prev": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

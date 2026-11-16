@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/consent-terms.v1.json",
+  "title": "Consent terms v1",
+  "description": "One person's consent to a data commons, in machine-readable form. Designed to travel with the data: any recipient can check a request or a use against it. Pseudonymous: contains no name, phone number or address.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "terms_id",
+    "commons",
+    "subject_ref",
+    "language",
+    "notice",
+    "granted_at",
+    "expires_at",
+    "purposes",
+    "data_categories",
+    "permitted_users",
+    "deidentification",
+    "cross_border_transfer",
+    "benefit_sharing",
+    "withdrawal",
+    "comprehension",
+    "synthetic"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "terms_id": {
+      "type": "string",
+      "pattern": "^ct_[0-9a-f]{16}$"
+    },
+    "commons": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "subject_ref": {
+      "type": "string",
+      "pattern": "^p_[0-9a-f]{16}$",
+      "description": "Random pseudonym. Never a name, phone number or ID number."
+    },
+    "language": {
+      "enum": [
+        "en",
+        "pcm",
+        "yo"
+      ],
+      "description": "BCP-47 code of the language the person read: en: English | pcm: Nigerian Pidgin | yo: Yorùbá"
+    },
+    "notice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "digest",
+        "translation_status"
+      ],
+      "description": "Which exact wording was shown: SHA-256 of the canonical notice text, and whether its translation was reviewed.",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "translation_status": {
+          "enum": [
+            "draft_unreviewed",
+            "community_reviewed",
+            "professionally_verified"
+          ]
+        }
+      }
+    },
+    "granted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "purposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed",
+        "denied"
+      ],
+      "description": "Deny by default: anything not in allowed is denied. service_improvement: Improving the community mental-health service the person uses | public_health_research: Non-commercial public-health research on youth mental health | policy_statistics: Anonymous totals for policy, planning and advocacy | ai_training_noncommercial: Training or testing open, non-commercial AI tools for mental-health support | ai_training_commercial: Training or testing AI products sold for profit",
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "service_improvement",
+              "public_health_research",
+              "policy_statistics",
+              "ai_training_noncommercial",
+              "ai_training_commercial"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "service_improvement: Improving the community mental-health service the person uses | public_health_research: Non-commercial public-health research on youth mental health | policy_statistics: Anonymous totals for policy, planning and advocacy | ai_training_noncommercial: Training or testing open, non-commercial AI tools for mental-health support | ai_training_commercial: Training or testing AI products sold for profit"
+        },
+        "denied": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "service_improvement",
+              "public_health_research",
+              "policy_statistics",
+              "ai_training_noncommercial",
+              "ai_training_commercial"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 0,
+          "description": "service_improvement: Improving the community mental-health service the person uses | public_health_research: Non-commercial public-health research on youth mental health | policy_statistics: Anonymous totals for policy, planning and advocacy | ai_training_noncommercial: Training or testing open, non-commercial AI tools for mental-health support | ai_training_commercial: Training or testing AI products sold for profit"
+        }
+      }
+    },
+    "data_categories": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "usage_metadata",
+          "demographics",
+          "screening_scores",
+          "chat_transcripts",
+          "voice_audio"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "usage_metadata: When and how often the service was used (no message content) | demographics: Age range, gender and state (no name, phone number or address) | screening_scores: Answers to wellbeing check questions, such as mood scores | chat_transcripts: What the person typed in chats, with names and numbers removed | voice_audio: Voice notes"
+    },
+    "permitted_users": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "commons_stewards",
+          "nigerian_public_researchers",
+          "international_academic",
+          "nonprofits",
+          "government_health",
+          "commercial"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "commons_stewards: The commons team itself | nigerian_public_researchers: Universities and public-health researchers in Nigeria | international_academic: Universities outside Nigeria | nonprofits: Non-profit organisations | government_health: Government health agencies | commercial: Companies that make money from products"
+    },
+    "deidentification": {
+      "enum": [
+        "deidentified",
+        "aggregated_only"
+      ],
+      "description": "Minimum protection required. deidentified: Record-level, with names, numbers and addresses removed | aggregated_only: Only totals and averages, never individual records"
+    },
+    "cross_border_transfer": {
+      "type": "boolean",
+      "description": "May the data be stored or used outside Nigeria?"
+    },
+    "benefit_sharing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required"
+      ],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "results_back",
+              "open_access",
+              "community_credit",
+              "community_fund",
+              "local_capacity"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 0,
+          "description": "A request must commit to ALL of these to include this person. results_back: Results returned to the community in plain language | open_access: Findings published free for anyone to read | community_credit: The community is credited (acknowledgement or co-authorship) | community_fund: A share of funding or revenue goes to a community fund | local_capacity: Paid training or jobs for local researchers or health workers"
+        }
+      }
+    },
+    "withdrawal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed",
+        "effect",
+        "recipient_deletion_days"
+      ],
+      "properties": {
+        "allowed": {
+          "const": true
+        },
+        "effect": {
+          "const": "stop_future_use_and_delete_record_level_copies"
+        },
+        "recipient_deletion_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 90
+        }
+      }
+    },
+    "recontact_allowed": {
+      "type": "boolean"
+    },
+    "comprehension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questions",
+        "correct_first_try",
+        "attempts",
+        "passed"
+      ],
+      "properties": {
+        "questions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "correct_first_try": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "passed": {
+          "const": true
+        }
+      }
+    },
+    "collected_via": {
+      "type": "string"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "True for demo data. Real deployments set false."
+    }
+  }
+}

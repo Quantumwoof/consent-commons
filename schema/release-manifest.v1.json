@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/release-manifest.v1.json",
+  "title": "Release manifest v1",
+  "description": "Travels with every released dataset: who received it, under which binding terms, which approval allowed it, and which consent terms each record came from.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "release_id",
+    "commons",
+    "released_at",
+    "recipient",
+    "request",
+    "approval",
+    "terms",
+    "obligations",
+    "records",
+    "record_count",
+    "dataset_digest",
+    "ledger_head_before_release",
+    "synthetic"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "manifest_version": {
+      "const": "1.0.0"
+    },
+    "release_id": {
+      "type": "string"
+    },
+    "commons": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "released_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recipient": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "organisation",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "commons_stewards",
+            "nigerian_public_researchers",
+            "international_academic",
+            "nonprofits",
+            "government_health",
+            "commercial"
+          ]
+        },
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "contact": {
+          "type": "string"
+        }
+      }
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "request_id",
+        "version",
+        "request_digest"
+      ],
+      "properties": {
+        "request_id": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer"
+        },
+        "request_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": [
+        "decision_entry",
+        "tally",
+        "vote_entries"
+      ],
+      "properties": {
+        "decision_entry": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "tally": {
+          "type": "object"
+        },
+        "vote_entries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "terms": {
+      "type": "object",
+      "required": [
+        "purpose",
+        "data_categories",
+        "deidentification",
+        "cross_border_transfer",
+        "access_ends_at",
+        "onward_sharing",
+        "reidentification_attempts",
+        "on_expiry",
+        "on_withdrawal_notice",
+        "consent_scope"
+      ],
+      "properties": {
+        "purpose": {
+          "enum": [
+            "service_improvement",
+            "public_health_research",
+            "policy_statistics",
+            "ai_training_noncommercial",
+            "ai_training_commercial"
+          ]
+        },
+        "data_categories": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "usage_metadata",
+              "demographics",
+              "screening_scores",
+              "chat_transcripts",
+              "voice_audio"
+            ]
+          },
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "usage_metadata: When and how often the service was used (no message content) | demographics: Age range, gender and state (no name, phone number or address) | screening_scores: Answers to wellbeing check questions, such as mood scores | chat_transcripts: What the person typed in chats, with names and numbers removed | voice_audio: Voice notes"
+        },
+        "deidentification": {
+          "enum": [
+            "deidentified",
+            "aggregated_only"
+          ]
+        },
+        "cross_border_transfer": {
+          "type": "boolean"
+        },
+        "access_ends_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "onward_sharing": {
+          "const": false
+        },
+        "reidentification_attempts": {
+          "const": "forbidden"
+        }
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "description",
+          "due"
+        ],
+        "properties": {
+          "code": {
+            "enum": [
+              "results_back",
+              "open_access",
+              "community_credit",
+              "community_fund",
+              "local_capacity"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "due": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_id",
+          "terms_digest"
+        ],
+        "properties": {
+          "record_id": {
+            "type": "string",
+            "pattern": "^r_[0-9a-f]{16}$"
+          },
+          "terms_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "record_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "dataset_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ledger_head_before_release": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "synthetic": {
+      "type": "boolean"
+    },
+    "signature": {
+      "type": "object",
+      "required": [
+        "alg",
+        "key_id",
+        "public_key",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "Ed25519 signature over the canonical JSON (sorted keys, no whitespace) of the document without this field.",
+      "properties": {
+        "alg": {
+          "const": "Ed25519"
+        },
+        "key_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "public_key": {
+          "type": "object",
+          "required": [
+            "kty",
+            "crv",
+            "x"
+          ],
+          "properties": {
+            "kty": {
+              "const": "OKP"
+            },
+            "crv": {
+              "const": "Ed25519"
+            },
+            "x": {
+              "type": "string"
+            }
+          }
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/consent-terms.v1.json",
+  "schema_version": "1.0.0",
+  "terms_id": "ct_66ed7a24c6353198",
+  "commons": {
+    "id": "commons-demo-ng",
+    "name": "Consent Commons demo (synthetic)"
+  },
+  "subject_ref": "p_1375b849495e13e4",
+  "language": "pcm",
+  "notice": {
+    "version": "notice-1.0.0",
+    "digest": "82d7d2823e7b2e4893726c9f8d633485b7b319a89b9e4939df380cf40f05de2e",
+    "translation_status": "draft_unreviewed"
+  },
+  "granted_at": "2026-10-02T09:00:00.000Z",
+  "expires_at": "2027-10-02T09:00:00.000Z",
+  "purposes": {
+    "allowed": [
+      "service_improvement",
+      "public_health_research",
+      "policy_statistics",
+      "ai_training_noncommercial"
+    ],
+    "denied": [
+      "ai_training_commercial"
+    ]
+  },
+  "data_categories": [
+    "demographics",
+    "screening_scores",
+    "chat_transcripts"
+  ],
+  "permitted_users": [
+    "commons_stewards",
+    "nigerian_public_researchers",
+    "nonprofits",
+    "government_health"
+  ],
+  "deidentification": "deidentified",
+  "cross_border_transfer": false,
+  "benefit_sharing": {
+    "required": [
+      "open_access"
+    ]
+  },
+  "withdrawal": {
+    "allowed": true,
+    "effect": "stop_future_use_and_delete_record_level_copies",
+    "recipient_deletion_days": 30
+  },
+  "recontact_allowed": false,
+  "comprehension": {
+    "questions": 4,
+    "correct_first_try": 4,
+    "attempts": 1,
+    "passed": true
+  },
+  "collected_via": "synthetic_seed",
+  "synthetic": true
+}

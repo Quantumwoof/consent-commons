@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Quantumwoof/consent-commons/main/schema/access-request.v1.json",
+  "title": "Access request v1",
+  "description": "A researcher's request to use data from the commons. Its SHA-256 digest (canonical JSON) is what reviewers vote on.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "version",
+    "submitted_at",
+    "requester",
+    "purpose",
+    "data_categories",
+    "deidentification",
+    "duration_days",
+    "cross_border_transfer",
+    "benefit_commitments",
+    "benefit_description"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "pattern": "^ar_[0-9a-z_]+$"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "requester": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "organisation",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "commons_stewards",
+            "nigerian_public_researchers",
+            "international_academic",
+            "nonprofits",
+            "government_health",
+            "commercial"
+          ]
+        },
+        "country": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "contact": {
+          "type": "string"
+        }
+      }
+    },
+    "purpose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "description"
+      ],
+      "properties": {
+        "code": {
+          "enum": [
+            "service_improvement",
+            "public_health_research",
+            "policy_statistics",
+            "ai_training_noncommercial",
+            "ai_training_commercial"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 40
+        }
+      }
+    },
+    "data_categories": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "usage_metadata",
+          "demographics",
+          "screening_scores",
+          "chat_transcripts",
+          "voice_audio"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "usage_metadata: When and how often the service was used (no message content) | demographics: Age range, gender and state (no name, phone number or address) | screening_scores: Answers to wellbeing check questions, such as mood scores | chat_transcripts: What the person typed in chats, with names and numbers removed | voice_audio: Voice notes"
+    },
+    "deidentification": {
+      "enum": [
+        "deidentified",
+        "aggregated_only"
+      ]
+    },
+    "duration_days": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "cross_border_transfer": {
+      "type": "boolean"
+    },
+    "cohort": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "record_ids"
+      ],
+      "description": "Optional: a follow-up on named records from an earlier release.",
+      "properties": {
+        "release_id": {
+          "type": "string"
+        },
+        "record_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^r_[0-9a-f]{16}$"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "benefit_commitments": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "results_back",
+          "open_access",
+          "community_credit",
+          "community_fund",
+          "local_capacity"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "results_back: Results returned to the community in plain language | open_access: Findings published free for anyone to read | community_credit: The community is credited (acknowledgement or co-authorship) | community_fund: A share of funding or revenue goes to a community fund | local_capacity: Paid training or jobs for local researchers or health workers"
+    },
+    "benefit_description": {
+      "type": "string",
+      "minLength": 30
+    }
+  }
+}
