@@ -140,7 +140,7 @@ web/            static demo: chat, review dashboard, ledger explorer (no framewo
 schema/         JSON Schemas (generated from src/core/vocab.js; tests fail if they drift)
 bin/commons.js  CLI: seed, verify, verify-receipt, check, tamper-demo, validate
 tests/          48 tests (node:test)
-docs/           EXPLAINER, SCHEMA, THREAT_MODEL, TRANSLATION_REVIEW
+docs/           EXPLAINER, SCHEMA, THREAT_MODEL, TRANSLATION_REVIEW, USER_TESTING_KIT (draft)
 ```
 
 ## Credits and disclosure
