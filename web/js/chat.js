@@ -115,7 +115,7 @@ async function chooseLanguage() {
   system('Choose a language · Choose language · Yan èdè');
   const l = await choose([{ value: 'en', label: 'English' }, { value: 'pcm', label: 'Pidgin (Naijá)' }, { value: 'yo', label: 'Yorùbá' }]);
   setLang(l);
-  if (l !== 'en') system('DRAFT translation: not yet reviewed by native speakers.');
+  if (l !== 'en') system(l === 'pcm' ? 'DRAFT: native speaker never check dis Pidgin yet · Draft translation, not yet reviewed' : 'DRAFT translation: not yet reviewed by native speakers.');
 }
 
 function summaryCard(c) {
