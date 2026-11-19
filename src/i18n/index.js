@@ -4,6 +4,12 @@ import { digestOf } from '../core/hash.js';
 import en from './en.js';
 import pcm from './pcm.js';
 import yo from './yo.js';
+import pagesEn from './pages/en.js';
+import pagesPcm from './pages/pcm.js';
+import pagesYo from './pages/yo.js';
+
+// Page text (site chrome, home, review, ledger) joins each locale's UI table. It is never part of the notice digest.
+Object.assign(en.u, pagesEn); Object.assign(pcm.u, pagesPcm); Object.assign(yo.u, pagesYo);
 
 export const NOTICE_VERSION = 'notice-1.0.0';
 export const LOCALES = { en, pcm, yo };
@@ -17,6 +23,14 @@ export function t(lang, key, vars = {}) {
 export function tu(lang, key, vars = {}) {
   const s = LOCALES[lang]?.u?.[key] ?? LOCALES.en.u[key] ?? key;
   return s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
+}
+
+/** Render a core check message [key, vars]; a var written '@key' is itself a UI key to translate. */
+export function tmsg(lang, msg) {
+  if (!msg) return '';
+  const [key, vars = {}] = msg;
+  const v = Object.fromEntries(Object.entries(vars).map(([k, x]) => [k, typeof x === 'string' && x.startsWith('@') ? tu(lang, x.slice(1)) : x]));
+  return tu(lang, key, v);
 }
 
 /**

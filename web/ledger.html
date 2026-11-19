@@ -3,24 +3,26 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ledger · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_ledger">
 <meta name="description" content="Hash-chained, append-only ledger of consent, withdrawal, requests, votes, decisions and releases. Verify it, try to tamper with it, check a receipt.">
 <link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
 </head>
 <body>
 <!--CHROME:ledger-->
 <main class="wrap grid">
-  <div class="row"><h1 style="margin:0">Ledger</h1><span class="spacer"></span>
-    <button class="btn" id="export" type="button">Export JSONL</button>
-    <label class="btn" style="cursor:pointer">Audit a ledger file<input type="file" id="import" accept=".jsonl,.txt,.json" hidden></label>
-    <button class="btn" id="reset" type="button">Reset demo</button></div>
+  <div class="row"><h1 style="margin:0" data-i18n="lg_title">Ledger</h1><span class="spacer"></span>
+    <button class="btn" id="export" type="button" data-i18n="lg_export">Export JSONL</button>
+    <label class="btn" style="cursor:pointer"><span data-i18n="lg_import">Audit a ledger file</span><input type="file" id="import" accept=".jsonl,.txt,.json" hidden></label>
+    <button class="btn" id="reset" type="button" data-i18n="lg_reset">Reset demo</button></div>
   <div class="card" id="verify-card"></div>
-  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(360px,1fr))">
+  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(min(360px,100%),1fr))">
     <div class="card" id="tamper-card"></div>
     <div class="card" id="receipt-card"><span id="verify-receipt"></span></div>
   </div>
-  <div class="card"><div class="row"><h2 style="margin:0">Entries</h2><span class="spacer"></span><select id="filter" style="width:auto"></select></div>
+  <div class="card"><div class="row"><h2 style="margin:0" data-i18n="lg_entries_h">Entries</h2><span class="spacer"></span><select id="filter" style="width:auto"></select></div>
     <div style="overflow:auto"><table class="t" id="entries"></table></div></div>
 </main>
+<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
 <script type="module" src="/js/ledger.js"></script>
 </body>
 </html>

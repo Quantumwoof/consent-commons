@@ -148,7 +148,9 @@ test('UI strings: every locale has every key with the same placeholders; Pidgin 
     assert.deepEqual(Object.keys(loc.u).sort(), keys.slice().sort(), code);
     for (const k of keys) { assert.ok(loc.u[k].trim(), `${code}.${k}`); assert.equal(ph(loc.u[k]), ph(LOCALES.en.u[k]), `${code}.${k}`); }
   }
-  for (const code of ['pcm', 'yo']) for (const k of keys) assert.notEqual(LOCALES[code].u[k], LOCALES.en.u[k], `${code}.${k} is still English`);
+  // Words Pidgin shares with English, language names and file/brand words. Everything else must differ.
+  const SAME = { pcm: new Set(['lang_en', 'lang_yo', 'rv_yes', 'rv_no', 'rv_days', 'rv_community', 'rv_f_name', 'rv_records', 'rv_th_record', 'rv_s_records', 'rv_r_vote', 'rv_community_tag', 'lg_file', 'lg_th_time', 'ent_genesis_key']), yo: new Set(['lang_yo']) };
+  for (const code of ['pcm', 'yo']) for (const k of keys) if (!SAME[code].has(k)) assert.notEqual(LOCALES[code].u[k], LOCALES.en.u[k], `${code}.${k} is still English`);
   // common English-only words that real Pidgin replaces (dey, don, wey, dem ...)
   const english = /\b(is|are|was|were|has|have|isn't|don't|doesn't|please|will|would|cannot|must not)\b/i;
   for (const [k, v] of Object.entries(LOCALES.pcm.u)) {

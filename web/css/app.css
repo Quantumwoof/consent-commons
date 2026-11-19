@@ -24,10 +24,13 @@ button { font: inherit; cursor: pointer; }
 .topnav nav { display: flex; gap: .25rem; flex-wrap: wrap; margin-left: auto; }
 .topnav nav a { text-decoration: none; color: var(--muted); padding: .4rem .7rem; border-radius: 8px; font-weight: 500; }
 .topnav nav a[aria-current="page"], .topnav nav a:hover { background: var(--brand-soft); color: var(--brand-2); }
+.topnav .nav-lang { width: auto; font-size: 16px; padding: .3rem .4rem; border-radius: 8px; }
+@media (max-width: 640px) { .topnav .brand { flex: 1; } .topnav nav { margin-left: 0; order: 3; width: 100%; } }
 
 .wrap { max-width: 1180px; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem 1.2rem; }
 .grid { display: grid; gap: 1rem; }
+.grid > * { min-width: 0; }
 .muted { color: var(--muted); }
 .small { font-size: .875rem; }
 .row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
@@ -192,3 +195,4 @@ pre.json { background: #0f1a14; color: #d7f5e4; padding: .8rem; border-radius: 8
 .assist-box { padding: .8rem 1rem; }
 .assist-toggle { display: flex; gap: .55rem; align-items: flex-start; font-weight: 600; font-size: .92rem; }
 .assist-toggle input { width: 20px; height: 20px; margin-top: .1rem; flex: none; accent-color: var(--brand); }
+@media (max-width: 640px) { .card > table.t { display: block; overflow-x: auto; } }

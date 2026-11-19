@@ -355,26 +355,29 @@ export class Commons {
  * Detects: an edited receipt, a forged receipt, an edited ledger, and a ledger rewritten from scratch
  * (the receipt's entry hash will no longer be in it), which a hash chain alone cannot catch.
  */
+/** Translatable form of a verifyChain result: [key, vars]; '@key' values are translated too. */
+const chainMsg = (c) => (c.ok ? ['d_chain_ok', { n: c.entries }] : ['d_chain_bad', { seq: c.brokenAt, why: '@chain_' + (c.code ?? 'hash') }]);
+
 export async function verifyReceipt(receipt, entries) {
   const checks = [];
-  const add = (name, ok, detail) => checks.push({ name, ok, detail });
+  const add = (name, ok, detail, id, msg) => checks.push({ name, ok, detail, id, msg });
   const genesis = entries[0];
   const key = genesis?.data?.signing_key;
   if (receipt.signature) {
     const { signature, withdrawal_code, ...body } = receipt; // eslint-disable-line no-unused-vars
     const v = await verifySignature(body, signature, { trustedKeyId: key?.key_id });
-    add('Signature', v.ok, v.ok ? `Signed by this commons (key ${v.keyId}).` : v.reason);
-  } else add('Signature', false, 'Receipt is not signed.');
+    add('Signature', v.ok, v.ok ? `Signed by this commons (key ${v.keyId}).` : v.reason, 'signature', v.ok ? ['d_signed', { key: v.keyId }] : ['d_' + v.code, {}]);
+  } else add('Signature', false, 'Receipt is not signed.', 'signature', ['d_receipt_unsigned', {}]);
   if (receipt.kind === 'consent_receipt') {
     const dg = await digestOf(receipt.terms);
-    add('Terms fingerprint', dg === receipt.terms_digest, dg === receipt.terms_digest ? 'Terms match their fingerprint.' : 'Terms were changed after the receipt was issued.');
+    add('Terms fingerprint', dg === receipt.terms_digest, dg === receipt.terms_digest ? 'Terms match their fingerprint.' : 'Terms were changed after the receipt was issued.', 'terms', [dg === receipt.terms_digest ? 'd_terms_ok' : 'd_terms_bad', {}]);
   }
   const chain = await verifyChain(entries);
-  add('Ledger integrity', chain.ok, chain.ok ? `All ${chain.entries} entries link correctly.` : `Broken at entry #${chain.brokenAt}: ${chain.reason}`);
+  add('Ledger integrity', chain.ok, chain.ok ? `All ${chain.entries} entries link correctly.` : `Broken at entry #${chain.brokenAt}: ${chain.reason}`, 'chain', chainMsg(chain));
   const e = entries[receipt.ledger_entry?.seq];
   const present = e && e.hash === receipt.ledger_entry.hash;
-  add('Entry is in the ledger', !!present, present ? `Found at entry #${e.seq}.` : 'The ledger does not contain this entry: it was removed or the history was rewritten.');
-  if (present) add('Entry matches receipt', e.data?.terms_digest === receipt.terms_digest, e.data?.terms_digest === receipt.terms_digest ? 'Ledger entry records the same terms.' : 'Ledger entry records different terms.');
+  add('Entry is in the ledger', !!present, present ? `Found at entry #${e.seq}.` : 'The ledger does not contain this entry: it was removed or the history was rewritten.', 'present', present ? ['d_found', { seq: e.seq }] : ['d_not_found', {}]);
+  if (present) add('Entry matches receipt', e.data?.terms_digest === receipt.terms_digest, e.data?.terms_digest === receipt.terms_digest ? 'Ledger entry records the same terms.' : 'Ledger entry records different terms.', 'match', [e.data?.terms_digest === receipt.terms_digest ? 'd_same_terms' : 'd_diff_terms', {}]);
   let status = null;
   if (present && receipt.kind === 'consent_receipt') {
     const ref = receipt.terms.subject_ref;
@@ -391,32 +394,32 @@ export async function verifyReceipt(receipt, entries) {
  */
 export async function verifyManifest(manifest, entries) {
   const checks = [];
-  const add = (id, status, detail) => checks.push({ id, status, detail });
+  const add = (id, status, detail, msg) => checks.push({ id, status, detail, msg });
   const m = manifest ?? {};
   const key = entries[0]?.data?.signing_key ?? null;
   const policy = entries[0]?.data?.policy ?? DEFAULT_POLICY;
   if (key) {
     const { signature, ...body } = m;
     const v = await verifySignature(body, signature, { trustedKeyId: key.key_id });
-    add('signature', v.ok ? 'pass' : 'fail', v.ok ? `Signed by this commons (key ${v.keyId}).` : v.reason);
-  } else add('signature', m.signature ? 'fail' : 'skip', m.signature ? 'This commons declares no signing key, so the signature cannot be trusted.' : 'This commons has no signing key (the browser could not sign), so there is no signature to check.');
+    add('signature', v.ok ? 'pass' : 'fail', v.ok ? `Signed by this commons (key ${v.keyId}).` : v.reason, v.ok ? ['d_signed', { key: v.keyId }] : ['d_' + v.code, {}]);
+  } else add('signature', m.signature ? 'fail' : 'skip', m.signature ? 'This commons declares no signing key, so the signature cannot be trusted.' : 'This commons has no signing key (the browser could not sign), so there is no signature to check.', [m.signature ? 'd_nokey_signed' : 'd_nokey_skip', {}]);
   const chain = await verifyChain(entries);
-  add('chain', chain.ok ? 'pass' : 'fail', chain.ok ? `All ${chain.entries} entries link correctly.` : `Broken at entry #${chain.brokenAt}: ${chain.reason}`);
+  add('chain', chain.ok ? 'pass' : 'fail', chain.ok ? `All ${chain.entries} entries link correctly.` : `Broken at entry #${chain.brokenAt}: ${chain.reason}`, chainMsg(chain));
   const rel = entries.find((e) => e?.type === 'DATA_RELEASED' && e.data?.manifest?.release_id === m.release_id);
   const same = rel && (await digestOf(rel.data.manifest)) === (await digestOf(m));
-  add('in_ledger', same ? 'pass' : 'fail', !rel ? 'No release with this ID is on the ledger.' : same ? `Identical to ledger entry #${rel.seq}.` : 'The ledger records a different manifest for this release: this copy was changed.');
+  add('in_ledger', same ? 'pass' : 'fail', !rel ? 'No release with this ID is on the ledger.' : same ? `Identical to ledger entry #${rel.seq}.` : 'The ledger records a different manifest for this release: this copy was changed.', !rel ? ['d_norel', {}] : same ? ['d_identical', { seq: rel.seq }] : ['d_relchanged', {}]);
   const dec = entries.find((e) => e?.hash === m.approval?.decision_entry);
   const decOk = dec?.type === 'ACCESS_DECIDED' && dec.data.outcome === 'approved' && dec.data.request_id === m.request?.request_id
     && dec.data.request_digest === m.request?.request_digest && (await digestOf(dec.data.tally)) === (await digestOf(m.approval?.tally ?? null));
-  add('approval', decOk ? 'pass' : 'fail', decOk ? `Approved at ledger entry #${dec.seq}, for exactly this version of the request.` : 'The approval named in the manifest is missing from the ledger or does not match it.');
+  add('approval', decOk ? 'pass' : 'fail', decOk ? `Approved at ledger entry #${dec.seq}, for exactly this version of the request.` : 'The approval named in the manifest is missing from the ledger or does not match it.', decOk ? ['d_approved_at', { seq: dec.seq }] : ['d_approval_bad', {}]);
   const hashes = m.approval?.vote_entries ?? [];
   const votes = hashes.map((h) => entries.find((e) => e?.hash === h && e.type === 'REVIEW_VOTE')).filter(Boolean);
   const bound = votes.length === hashes.length && votes.every((e) => e.data.request_id === m.request?.request_id && e.data.request_digest === m.request?.request_digest);
   const t = tally(votes.map((e) => e.data), m.request?.request_digest, policy);
   const mt = m.approval?.tally ?? {};
   const countOk = bound && t.outcome === 'approved' && ['approvals', 'rejections', 'community_approvals', 'community_seats', 'seats'].every((k) => t[k] === mt[k]);
-  add('votes', countOk ? 'pass' : 'fail', countOk ? `${t.approvals} of ${t.seats} approvals, ${t.community_approvals} from community seats, recounted from the ledger.` : 'Recounting the votes on the ledger does not give the tally in the manifest.');
+  add('votes', countOk ? 'pass' : 'fail', countOk ? `${t.approvals} of ${t.seats} approvals, ${t.community_approvals} from community seats, recounted from the ledger.` : 'Recounting the votes on the ledger does not give the tally in the manifest.', countOk ? ['d_votes_ok', { a: t.approvals, seats: t.seats, c: t.community_approvals }] : ['d_votes_bad', {}]);
   const s = await replay(entries);
-  add('rules', s.violations.length ? 'fail' : 'pass', s.violations.length ? `${s.violations.length} rule violation(s), first at entry #${s.violations[0].seq}: ${s.violations[0].message}` : 'Every governance rule holds when the whole ledger is replayed.');
+  add('rules', s.violations.length ? 'fail' : 'pass', s.violations.length ? `${s.violations.length} rule violation(s), first at entry #${s.violations[0].seq}: ${s.violations[0].message}` : 'Every governance rule holds when the whole ledger is replayed.', s.violations.length ? ['d_rules_bad', { n: s.violations.length, seq: s.violations[0].seq, why: '@rl_' + s.violations[0].rule }] : ['d_rules_ok', {}]);
   return { ok: checks.every((c) => c.status !== 'fail'), complete: checks.every((c) => c.status === 'pass'), checks };
 }

@@ -5,15 +5,15 @@ import { loadCommons, onExternalChange } from './store.js';
 import { el, $, short, pill } from './ui.js';
 import { verifyManifest } from '/src/core/commons.js';
 import { digestOf } from '/src/core/hash.js';
-import { t as ts, tu, LOCALES } from '/src/i18n/index.js';
+import { t as ts, tu, tmsg, LOCALES } from '/src/i18n/index.js';
+import { getLang, onLang, dateLocale } from './lang.js';
 
-let lang = LOCALES[localStorage.getItem('cc.lang')] ? localStorage.getItem('cc.lang') : 'en';
+let lang = getLang();
 let commons, tampered = false;
 const releaseId = new URLSearchParams(location.search).get('release');
 const u = (k, v) => tu(lang, k, v);
 const s = (k, v) => ts(lang, k, v);
-const yoOk = Intl.DateTimeFormat.supportedLocalesOf(['yo-NG']).length > 0;
-const fmt = (iso) => new Date(iso).toLocaleDateString(lang === 'yo' && yoOk ? 'yo-NG' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lagos' });
+const fmt = (iso) => new Date(iso).toLocaleDateString(dateLocale(), { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lagos' });
 const country = (cc) => (cc ? (LOCALES[lang].u[`country_${cc}`] ?? LOCALES.en.u[`country_${cc}`] ?? cc) : '—');
 const list = (codes, prefix) => codes.map((c) => s(prefix + c)).join('; ');
 
@@ -21,9 +21,7 @@ function section(title, ...body) { return el('section', { class: 'card sum-sec' 
 
 function setStatic() {
   document.documentElement.lang = lang;
-  $('#lang').value = lang;
   $('#s-title').textContent = u('sum_page_title');
-  $('#s-lang-label').textContent = u('sum_lang');
   $('#print').textContent = u('sum_print');
   $('#back').textContent = `← ${u('sum_back')}`;
   document.title = `${u('sum_page_title')} · Consent Commons`;
@@ -38,7 +36,7 @@ function badge(v) {
     el('div', { class: 'sum-verify-head', role: 'status' }, el('span', { class: 'sum-icon', 'aria-hidden': 'true' }, icon), el('strong', {}, head)),
     v ? el('ul', { class: 'sum-checks' }, v.checks.map((c) => el('li', {},
       el('span', {}, u(`chk_${c.id}`)), pill(label[c.status][0], label[c.status][1]),
-      lang === 'en' ? el('div', { class: 'small muted' }, c.detail) : null))) : null,
+      el('div', { class: 'small muted' }, c.msg ? tmsg(lang, c.msg) : c.detail)))) : null,
     el('p', { class: 'small muted', style: 'margin:.5rem 0 0' }, u('ver_scope')),
     el('div', { class: 'row no-print', style: 'margin-top:.6rem' },
       el('button', { class: `btn btn-sm ${tampered ? 'btn-primary' : ''}`, type: 'button', onclick: () => { tampered = !tampered; render(); } }, tampered ? u('ver_reset') : u('ver_tamper')),
@@ -92,12 +90,12 @@ async function render() {
       rel.notices.length ? el('ul', { class: 'sum-list' }, rel.notices.map((n) => el('li', {}, u('notice_line', { id: n.record_id, date: fmt(n.delete_by) }))))
         : el('p', { class: 'muted' }, u('no_notices')),
       el('p', { class: 'small muted' }, u('from_ledger'))),
-    el('p', { class: 'small muted mono sum-foot' }, `${m.release_id} · manifest ${short(await digestOf(m), 16)} · ${m.signature ? `key ${m.signature.key_id}` : 'unsigned'}`)].filter(Boolean));
+    el('p', { class: 'small muted mono sum-foot' }, `${m.release_id} · manifest ${short(await digestOf(m), 16)} · ${m.signature ? `${u('sum_key')} ${m.signature.key_id}` : u('sum_unsigned')}`)].filter(Boolean));
   const v = await verifyManifest(m, commons.entries);
   slot.replaceChildren(badge(v));
 }
 
-$('#lang').addEventListener('change', () => { lang = $('#lang').value; localStorage.setItem('cc.lang', lang); render(); });
+onLang((l) => { lang = l; render(); });
 $('#print').addEventListener('click', () => window.print());
 commons = await loadCommons();
 onExternalChange(async (c) => { commons = c; render(); });

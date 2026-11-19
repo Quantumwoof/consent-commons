@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Access review · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_review">
 <meta name="description" content="Researchers request data; automatic checks enforce consent terms; a community panel with quorum approves or rejects, with every vote bound to the request digest.">
 <link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
 </head>
@@ -10,15 +11,15 @@
 <!--CHROME:review-->
 <main class="wrap">
   <div class="row" style="margin-bottom:.5rem">
-    <h1 style="margin:0">Access review</h1><span class="spacer"></span>
-    <span class="small muted" id="acting-note">Demo: you can act as any panel seat. A real deployment gives each reviewer their own sign-in and key.</span>
+    <h1 style="margin:0" data-i18n="rv_title">Access review</h1><span class="spacer"></span>
+    <span class="small muted" id="acting-note" data-i18n="rv_acting">Demo: you can act as any panel seat. A real deployment gives each reviewer their own sign-in and key.</span>
   </div>
   <div class="tabs" role="tablist">
-    <button role="tab" data-tab="requests" aria-selected="true">Requests</button>
-    <button role="tab" data-tab="new" aria-selected="false">New request</button>
-    <button role="tab" data-tab="releases" aria-selected="false">Releases &amp; benefits</button>
-    <button role="tab" data-tab="pool" aria-selected="false">Consent pool</button>
-    <button role="tab" data-tab="rules" aria-selected="false">Panel rules</button>
+    <button role="tab" data-tab="requests" data-i18n="tab_requests" aria-selected="true">Requests</button>
+    <button role="tab" data-tab="new" data-i18n="tab_new" aria-selected="false">New request</button>
+    <button role="tab" data-tab="releases" data-i18n="tab_releases" aria-selected="false">Releases &amp; benefits</button>
+    <button role="tab" data-tab="pool" data-i18n="tab_pool" aria-selected="false">Consent pool</button>
+    <button role="tab" data-tab="rules" data-i18n="tab_rules" aria-selected="false">Panel rules</button>
   </div>
   <section id="tab-requests" class="layout"><div class="req-list" id="req-list"></div><div id="req-detail"></div></section>
   <section id="tab-new" hidden></section>
@@ -26,6 +27,7 @@
   <section id="tab-pool" hidden></section>
   <section id="tab-rules" hidden></section>
 </main>
+<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
 <script type="module" src="/js/review.js"></script>
 </body>
 </html>

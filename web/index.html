@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Consent Commons: community-owned consent for a mental-health data commons (synthetic demo)</title>
+<meta name="cc-title" content="title_home">
 <meta name="description" content="An open-source prototype of community-owned consent, access review and benefit-sharing for Nigerian mental-health data. Pidgin, Yorùbá and English. Synthetic data only.">
 <link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
 </head>
@@ -11,59 +12,50 @@
 <main class="wrap">
   <section class="hero">
     <div>
-      <h1>The community decides who uses its mental-health data, for what, and what comes back.</h1>
-      <p class="lead">Consent Commons is an open-source prototype of governance infrastructure for a mental-health data commons: portable consent terms, a plain-language consent chat in Pidgin, Yorùbá and English, a community review panel, and a tamper-evident ledger anyone can audit.</p>
+      <h1 data-i18n="home_h1">The community decides who uses its mental-health data, for what, and what comes back.</h1>
+      <p class="lead" data-i18n="home_lead">Consent Commons is an open-source prototype of governance infrastructure for a mental-health data commons.</p>
       <div class="row" style="margin-top:1rem">
-        <a class="btn btn-primary" href="/chat.html">Try the consent chat</a>
-        <a class="btn" href="/review.html">Open the review panel</a>
-        <a class="btn" href="/ledger.html">Audit the ledger</a>
-        <a class="btn" href="/ussd.html">No data? Try USSD (simulation)</a>
+        <a class="btn btn-primary" href="/chat.html" data-i18n="home_btn_chat">Try the consent chat</a>
+        <a class="btn" href="/review.html" data-i18n="home_btn_review">Open the review panel</a>
+        <a class="btn" href="/ledger.html" data-i18n="home_btn_ledger">Audit the ledger</a>
+        <a class="btn" href="/ussd.html" data-i18n="home_btn_ussd">No data? Try USSD (simulation)</a>
       </div>
     </div>
     <div class="card">
-      <h3>Why this exists</h3>
-      <p class="small">Mental-health data from African communities is increasingly used to build AI, often without meaningful consent, community control, or any share of the benefits. This prototype explores the opposite: the people the data comes from set the terms, and the terms are enforced by code, not just policy.</p>
-      <div class="callout callout-warn small"><b>Synthetic demo.</b> Every person, organisation, reviewer and record here is made up. There is no real health data in this project, and nothing you type leaves your browser.</div>
+      <h3 data-i18n="home_why_h">Why this exists</h3>
+      <p class="small" data-i18n="home_why_p"></p>
+      <div class="callout callout-warn small" data-i18n-html="home_synth_html"></div>
     </div>
   </section>
 
-  <h2 style="margin-top:1.5rem">How it works</h2>
+  <h2 style="margin-top:1.5rem" data-i18n="home_how_h">How it works</h2>
   <div class="flow" style="margin:.6rem 0 1.5rem">
-    <div><b>1 · Understand</b>A chat explains each choice in plain words. Four quick questions check it is clear before anything is recorded.</div>
-    <div><b>2 · Consent</b>Choices become machine-readable terms. The person keeps a signed receipt and a private withdrawal code.</div>
-    <div><b>3 · Request</b>A researcher asks for data. Automatic checks drop everyone whose terms don't cover it, and block the request if too few remain.</div>
-    <div><b>4 · Review</b>A panel of youth, lived-experience and health-worker reps votes. Each vote is bound to the exact request. Community seats can block.</div>
-    <div><b>5 · Release</b>Data goes out with a signed manifest: the binding terms, benefit obligations, and which consent each record came from.</div>
-    <div><b>6 · Withdraw</b>One message stops all future use, and recipients are told to delete the person's record. Works from the chat or a basic phone over USSD (simulated here).</div>
+    <div data-i18n-html="home_f1_html"></div><div data-i18n-html="home_f2_html"></div><div data-i18n-html="home_f3_html"></div>
+    <div data-i18n-html="home_f4_html"></div><div data-i18n-html="home_f5_html"></div><div data-i18n-html="home_f6_html"></div>
   </div>
 
   <div class="feature-grid">
-    <a class="card feature" href="/chat.html"><div class="num">CONSENT FLOW</div><h3>Consent chat</h3><p class="small muted">WhatsApp-style. English, Nigerian Pidgin and Yorùbá (draft translations, flagged for native-speaker review). Comprehension check, receipt, check and withdraw.</p></a>
-    <a class="card feature" href="/review.html"><div class="num">ACCESS REVIEW</div><h3>Community panel</h3><p class="small muted">Researchers submit requests and see a live preview of what consent allows. 5 seats, quorum with a community majority, reasoned votes, digest-bound approvals, benefit tracking.</p></a>
-    <a class="card feature" href="/ledger.html"><div class="num">LEDGER</div><h3>Tamper-evident record</h3><p class="small muted">Every event is hash-chained. Verify it, replay every governance rule, and try the tamper lab: edit, delete, or rewrite history and watch what catches it.</p></a>
-    <a class="card feature" href="/ussd.html"><div class="num">LOW CONNECTIVITY</div><h3>USSD on any phone</h3><p class="small muted">A clickable simulation of <span class="mono">*347*22#</span> (example code): check your consent or take your yes back with a basic phone and no data. Same ledger, same rules as the chat. The chat also has an "assisted by a health worker" label.</p></a>
-    <a class="card feature" href="/summary.html"><div class="num">COMMUNITY MEETINGS</div><h3>Plain-words release summary</h3><p class="small muted">Who got the data, for what, the vote, the rules and what is owed back, in English, Pidgin and Yorùbá, with a check against the ledger. Printable.</p></a>
-    <a class="card feature" href="https://github.com/Quantumwoof/consent-commons/blob/main/docs/SCHEMA.md"><div class="num">CONSENT SCHEMA</div><h3>Terms that travel</h3><p class="small muted">Versioned JSON Schemas for consent terms, access requests, release manifests, receipts and ledger entries. <span class="mono">/schema/consent-terms.v1.json</span></p></a>
+    <a class="card feature" href="/chat.html"><div class="num" data-i18n="home_c1_num"></div><h3 data-i18n="home_c1_h"></h3><p class="small muted" data-i18n="home_c1_p"></p></a>
+    <a class="card feature" href="/review.html"><div class="num" data-i18n="home_c2_num"></div><h3 data-i18n="home_c2_h"></h3><p class="small muted" data-i18n="home_c2_p"></p></a>
+    <a class="card feature" href="/ledger.html"><div class="num" data-i18n="home_c3_num"></div><h3 data-i18n="home_c3_h"></h3><p class="small muted" data-i18n="home_c3_p"></p></a>
+    <a class="card feature" href="/ussd.html"><div class="num" data-i18n="home_c4_num"></div><h3 data-i18n="home_c4_h"></h3><p class="small muted" data-i18n-html="home_c4_html"></p></a>
+    <a class="card feature" href="/summary.html"><div class="num" data-i18n="home_c5_num"></div><h3 data-i18n="home_c5_h"></h3><p class="small muted" data-i18n="home_c5_p"></p></a>
+    <a class="card feature" href="https://github.com/Quantumwoof/consent-commons/blob/main/docs/SCHEMA.md"><div class="num" data-i18n="home_c6_num"></div><h3 data-i18n="home_c6_h"></h3><p class="small muted" data-i18n-html="home_c6_html"></p></a>
   </div>
 
-  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); margin-top:1.5rem">
+  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(min(320px,100%),1fr)); margin-top:1.5rem">
     <div class="card">
-      <h3>What this is, and is not</h3>
-      <ul class="small">
-        <li>An <b>independent prototype</b> built by Joshua Jubelo in response to a published brief from the Slum &amp; Rural Health Initiative (SRHIN) in the Mozilla Foundation 2027 Fellowship call. It is <b>not</b> an SRHIN product, and it is not endorsed by SRHIN or Mozilla.</li>
-        <li><b>Not a chatbot</b> and not a clinical tool. It is the governance layer that would sit around tools that already exist.</li>
-        <li><b>Not yet tested with real people.</b> Translations are unreviewed drafts. It must be co-designed with young people, people with lived experience and community health workers before any real use.</li>
-        <li><b>Not legal advice</b> and not a compliance claim (for example under Nigeria's Data Protection Act 2023).</li>
-      </ul>
+      <h3 data-i18n="home_is_h">What this is, and is not</h3>
+      <ul class="small"><li data-i18n-html="home_is1_html"></li><li data-i18n-html="home_is2_html"></li><li data-i18n-html="home_is3_html"></li><li data-i18n-html="home_is4_html"></li></ul>
     </div>
     <div class="card">
-      <h3>Open by default</h3>
-      <p class="small">Apache-2.0 licensed. No accounts, no tracking, no paid services: the whole demo runs in your browser on Web Crypto (SHA-256 and Ed25519). Anyone can audit a ledger with the command-line tool.</p>
+      <h3 data-i18n="home_open_h">Open by default</h3>
+      <p class="small" data-i18n="home_open_p"></p>
       <pre class="json">npx github:Quantumwoof/consent-commons verify ledger.jsonl</pre>
-      <p class="small"><a href="https://github.com/Quantumwoof/consent-commons">Source code, README, threat model and explainer on GitHub →</a></p>
+      <p class="small"><a href="https://github.com/Quantumwoof/consent-commons" data-i18n="home_open_link">Source code on GitHub →</a></p>
     </div>
   </div>
 </main>
-<footer class="footer">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
+<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
 </body>
 </html>

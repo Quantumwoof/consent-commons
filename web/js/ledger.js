@@ -4,6 +4,15 @@ import { el, $, short, fmtTime, download, pill, toast } from './ui.js';
 import { audit, verifyReceipt } from '/src/core/commons.js';
 import { Ledger, verifyChain, hashEntry } from '/src/core/ledger.js';
 import { digestOf } from '/src/core/hash.js';
+import { t as ts, tu, tmsg } from '/src/i18n/index.js';
+import { getLang, onLang } from './lang.js';
+import { ruleText, errText } from './explain.js';
+
+// Page text comes from the locale files. Entry type codes (CONSENT_GRANTED, ...), IDs, hashes and the raw
+// JSON stay as recorded: they are what an auditor compares against the file.
+const T = (k, v) => tu(getLang(), k, v);
+const chainWhy = (c) => T('chain_' + (c.code ?? 'hash'));
+const violation = (v) => ruleText(v.rule, v.message);
 
 let commons, filter = '';
 const TONE = { GENESIS: 'neutral', CONSENT_GRANTED: 'good', CONSENT_WITHDRAWN: 'bad', ACCESS_REQUESTED: 'info', REVIEW_VOTE: 'neutral', ACCESS_DECIDED: 'warn', DATA_RELEASED: 'good', WITHDRAWAL_NOTICE_ISSUED: 'bad', BENEFIT_DELIVERED: 'good' };
@@ -11,39 +20,42 @@ const TONE = { GENESIS: 'neutral', CONSENT_GRANTED: 'good', CONSENT_WITHDRAWN: '
 function summary(e) {
   const d = e.data;
   switch (e.type) {
-    case 'GENESIS': return `${d.commons.name}: rules set (k ≥ ${d.policy.k_minimum}, quorum ${d.policy.approvals_required}/${d.policy.panel.length})${d.signing_key ? `, signing key ${d.signing_key.key_id}` : ''}`;
-    case 'CONSENT_GRANTED': return `${d.terms.subject_ref} consented in ${d.terms.language}${d.terms.collected_via === 'assisted_offline_demo' ? ', assisted by a health worker (demo label)' : ''} (${d.terms.purposes.allowed.length} purposes, ${d.terms.data_categories.length} data types, until ${d.terms.expires_at.slice(0, 10)})`;
-    case 'CONSENT_WITHDRAWN': return `${d.subject_ref} withdrew consent ${d.terms_id}`;
-    case 'ACCESS_REQUESTED': return `${d.request.request_id} v${d.request.version} from ${d.request.requester.organisation}: ${d.checks.passed ? `passed checks (${d.checks.eligible_count} people)` : 'BLOCKED: ' + d.checks.blocks.map((b) => b.code).join(', ')}`;
-    case 'REVIEW_VOTE': return `${d.reviewer_id} ${d.vote}s ${d.request_id} (digest ${short(d.request_digest, 8)})`;
-    case 'ACCESS_DECIDED': return `${d.request_id} ${d.outcome.toUpperCase()} (${d.tally.approvals} approve / ${d.tally.rejections} reject)`;
-    case 'DATA_RELEASED': return `${d.manifest.release_id}: ${d.manifest.record_count} synthetic records to ${d.manifest.recipient.organisation}`;
-    case 'WITHDRAWAL_NOTICE_ISSUED': return `${d.recipient} must delete ${d.record_id} by ${d.delete_by.slice(0, 10)}`;
-    case 'BENEFIT_DELIVERED': return `${d.release_id}: ${d.code} delivered`;
+    case 'GENESIS': return T('ent_genesis', { name: d.commons.name, k: d.policy.k_minimum, q: d.policy.approvals_required, p: d.policy.panel.length, key: d.signing_key ? T('ent_genesis_key', { key: d.signing_key.key_id }) : '' });
+    case 'CONSENT_GRANTED': return T('ent_consent', { ref: d.terms.subject_ref, lang: T('lang_' + d.terms.language), assisted: d.terms.collected_via === 'assisted_offline_demo' ? T('ent_assisted') : '', np: d.terms.purposes.allowed.length, nd: d.terms.data_categories.length, date: d.terms.expires_at.slice(0, 10) });
+    case 'CONSENT_WITHDRAWN': return T('ent_withdrawn', { ref: d.subject_ref, terms: d.terms_id });
+    case 'ACCESS_REQUESTED': return d.checks.passed ? T('ent_req_pass', { id: d.request.request_id, v: d.request.version, org: d.request.requester.organisation, n: d.checks.eligible_count })
+      : T('ent_req_block', { id: d.request.request_id, v: d.request.version, org: d.request.requester.organisation, codes: d.checks.blocks.map((b) => b.code).join(', ') });
+    case 'REVIEW_VOTE': return T(d.vote === 'approve' ? 'ent_vote_approve' : 'ent_vote_reject', { who: d.reviewer_id, id: d.request_id, d: short(d.request_digest, 8) });
+    case 'ACCESS_DECIDED': return T('ent_decided', { id: d.request_id, outcome: T('st_' + d.outcome).toUpperCase(), a: d.tally.approvals, r: d.tally.rejections });
+    case 'DATA_RELEASED': return T('ent_released', { id: d.manifest.release_id, n: d.manifest.record_count, org: d.manifest.recipient.organisation });
+    case 'WITHDRAWAL_NOTICE_ISSUED': return T('ent_notice', { org: d.recipient, rec: d.record_id, date: d.delete_by.slice(0, 10) });
+    case 'BENEFIT_DELIVERED': return T('ent_benefit', { id: d.release_id, benefit: ts(getLang(), 'ben_' + d.code) });
     default: return '';
   }
 }
 
-async function renderVerify(entries = commons.entries, label = 'This demo ledger') {
+let shown = null; // { entries, label } of an uploaded file, so a language change redraws the same result
+async function renderVerify(entries = commons.entries, label = null) {
+  shown = label ? { entries, label } : null;
   const r = await audit(entries);
   $('#verify-card').replaceChildren(
-    el('div', { class: 'row' }, el('h2', { style: 'margin:0' }, r.ok ? '✓ Ledger verified' : '✗ Ledger FAILED verification'), pill(label, 'neutral'), el('span', { class: 'spacer' }), el('button', { class: 'btn btn-primary', type: 'button', onclick: () => renderVerify() }, 'Verify again')),
-    el('p', { class: 'small muted', style: 'margin:.3rem 0 .6rem' }, 'Two separate checks. The hash chain proves no entry was edited, removed or reordered. The rule replay re-runs every governance rule from the start, so it also proves nobody broke the rules (for example, released data from someone who had withdrawn).'),
-    el('div', { class: 'grid', style: 'grid-template-columns: repeat(auto-fit,minmax(260px,1fr))' },
-      el('div', { class: `callout ${r.chain.ok ? 'callout-good' : 'callout-bad'}` }, el('b', {}, r.chain.ok ? '✓ Hash chain intact' : `✗ Chain broken at entry #${r.chain.brokenAt}`), el('div', { class: 'small' }, r.chain.ok ? `${r.entries} entries. Head: ` : r.chain.reason, r.chain.ok ? el('span', { class: 'digest' }, short(r.head, 24)) : null)),
-      el('div', { class: `callout ${r.violations.length ? 'callout-bad' : 'callout-good'}` }, el('b', {}, r.violations.length ? `✗ ${r.violations.length} rule violation(s)` : '✓ Every rule was followed'),
-        r.violations.length ? el('ul', { class: 'small' }, r.violations.slice(0, 5).map((v) => el('li', {}, `#${v.seq} ${v.type}: ${v.message}`))) : el('div', { class: 'small' }, 'Replayed every entry against the rulebook.'))),
-    el('p', { class: 'small muted', style: 'margin:.6rem 0 0' }, 'A real deployment would publish the head hash regularly (e.g. on a public page or in community meetings) so anyone can tell if history is rewritten later.'));
+    el('div', { class: 'row' }, el('h2', { style: 'margin:0' }, r.ok ? T('lg_ok_h') : T('lg_bad_h')), pill(label ?? T('lg_this'), 'neutral'), el('span', { class: 'spacer' }), el('button', { class: 'btn btn-primary', type: 'button', onclick: () => renderVerify() }, T('lg_verify_again'))),
+    el('p', { class: 'small muted', style: 'margin:.3rem 0 .6rem' }, T('lg_two')),
+    el('div', { class: 'grid', style: 'grid-template-columns: repeat(auto-fit,minmax(min(260px,100%),1fr))' },
+      el('div', { class: `callout ${r.chain.ok ? 'callout-good' : 'callout-bad'}` }, el('b', {}, r.chain.ok ? T('lg_chain_ok') : T('lg_chain_bad', { seq: r.chain.brokenAt })), el('div', { class: 'small' }, r.chain.ok ? T('lg_entries_head', { n: r.entries }) + ' ' : chainWhy(r.chain), r.chain.ok ? el('span', { class: 'digest' }, short(r.head, 24)) : null)),
+      el('div', { class: `callout ${r.violations.length ? 'callout-bad' : 'callout-good'}` }, el('b', {}, r.violations.length ? T('lg_viol', { n: r.violations.length }) : T('lg_rules_ok')),
+        r.violations.length ? el('ul', { class: 'small' }, r.violations.slice(0, 5).map((v) => el('li', {}, `#${v.seq} ${v.type}: `, el('code', {}, v.rule), ' ', violation(v)))) : el('div', { class: 'small' }, T('lg_replayed')))),
+    el('p', { class: 'small muted', style: 'margin:.6rem 0 0' }, T('lg_publish')));
 }
 
 function renderEntries() {
   const entries = commons.entries;
   const types = [...new Set(entries.map((e) => e.type))];
   const f = $('#filter');
-  f.replaceChildren(el('option', { value: '' }, `All types (${entries.length})`), ...types.map((t) => el('option', { value: t, selected: t === filter }, `${t} (${entries.filter((e) => e.type === t).length})`)));
+  f.replaceChildren(el('option', { value: '' }, T('lg_all', { n: entries.length })), ...types.map((t) => el('option', { value: t, selected: t === filter }, `${t} (${entries.filter((e) => e.type === t).length})`)));
   f.onchange = () => { filter = f.value; renderEntries(); };
   const rows = entries.filter((e) => !filter || e.type === filter).reverse();
-  $('#entries').replaceChildren(el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Time'), el('th', {}, 'Type'), el('th', {}, 'What happened'), el('th', {}, 'Hash'), el('th', {}, 'Prev'))),
+  $('#entries').replaceChildren(el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, T('lg_th_time')), el('th', {}, T('lg_th_type')), el('th', {}, T('lg_th_what')), el('th', {}, 'Hash'), el('th', {}, 'Prev'))),
     el('tbody', {}, rows.map((e) => {
       const tr = el('tr', { class: 'clickable', tabindex: '0' }, el('td', {}, e.seq), el('td', { class: 'small' }, fmtTime(e.ts)), el('td', {}, pill(e.type, TONE[e.type])), el('td', {}, summary(e), el('div', { class: 'small muted' }, e.actor)), el('td', { class: 'mono small' }, short(e.hash, 10)), el('td', { class: 'mono small' }, short(e.prev, 10)));
       const toggle = () => { if (tr.nextSibling?.dataset?.detail) tr.nextSibling.remove(); else tr.after(el('tr', { 'data-detail': '1' }, el('td', { colspan: '6' }, el('pre', { class: 'json' }, JSON.stringify(e, null, 2))))); };
@@ -64,25 +76,25 @@ function renderTamper() {
     const rc = await verifyReceipt(receipt, copy);
     out.replaceChildren(el('div', { class: 'callout callout-info' }, el('b', {}, label), el('div', {}, note)),
       el('ul', {},
-        el('li', {}, chain.ok ? el('span', { class: 'check-bad' }, '✗ The hash chain alone does NOT catch this: it still links') : el('span', { class: 'check-ok' }, `✓ Hash chain catches it at entry #${chain.brokenAt}: ${chain.reason}`)),
-        el('li', {}, r.violations.length ? el('span', { class: 'check-ok' }, `✓ Rule replay: ${r.violations.length} violation(s), first: ${r.violations[0].message}`) : el('span', { class: 'check-bad' }, '✗ Rule replay: no rule broken')),
-        el('li', {}, rc.ok ? el('span', { class: 'check-bad' }, '✗ A person\'s kept receipt still matches') : el('span', { class: 'check-ok' }, `✓ The person's kept receipt catches it: ${rc.checks.find((c) => !c.ok).detail}`))),
-      el('p', { class: 'muted' }, 'This ran on a copy in memory. The real ledger is untouched. Note: an operator who also holds the signing key could rebuild every manifest so the rule replay passes too. That is why receipts and published head hashes, held outside the ledger, are the last line of defence.'));
+        el('li', {}, chain.ok ? el('span', { class: 'check-bad' }, T('lg_t_chain_miss')) : el('span', { class: 'check-ok' }, T('lg_t_chain_hit', { seq: chain.brokenAt, why: chainWhy(chain) }))),
+        el('li', {}, r.violations.length ? el('span', { class: 'check-ok' }, T('lg_t_rules_hit', { n: r.violations.length, why: violation(r.violations[0]) })) : el('span', { class: 'check-bad' }, T('lg_t_rules_miss'))),
+        el('li', {}, rc.ok ? el('span', { class: 'check-bad' }, T('lg_t_rc_miss')) : el('span', { class: 'check-ok' }, T('lg_t_rc_hit', { why: tmsg(getLang(), rc.checks.find((c) => !c.ok).msg) })))),
+      el('p', { class: 'muted' }, T('lg_t_copy')));
   };
-  $('#tamper-card').replaceChildren(el('h2', {}, 'Tamper lab'),
-    el('p', { class: 'small muted' }, 'Try what a dishonest operator might do. Each attack runs on a copy.'),
+  $('#tamper-card').replaceChildren(el('h2', {}, T('lg_tamper_h')),
+    el('p', { class: 'small muted' }, T('lg_tamper_p')),
     el('div', { class: 'row' },
-      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run('Edit a past consent', (c) => { const i = firstConsent(); c[i].data.terms.purposes.allowed.push('ai_training_commercial'); return `Quietly added "commercial AI training" to entry #${i}.`; }) }, 'Edit a consent'),
-      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run('Delete a withdrawal', (c) => { const i = c.findIndex((e) => e.type === 'CONSENT_WITHDRAWN'); c.splice(i, 1); return `Removed entry #${i}, a withdrawal, so that person's data could be used again.`; }) }, 'Delete a withdrawal'),
-      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run('Rewrite history and re-hash everything', async (c) => {
+      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_edit_label'), (c) => { const i = firstConsent(); c[i].data.terms.purposes.allowed.push('ai_training_commercial'); return T('lg_t_edit_note', { i }); }) }, T('lg_t_edit_btn')),
+      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_del_label'), (c) => { const i = c.findIndex((e) => e.type === 'CONSENT_WITHDRAWN'); c.splice(i, 1); return T('lg_t_del_note', { i }); }) }, T('lg_t_del_btn')),
+      el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_rw_label'), async (c) => {
         const i = firstConsent();
         // A careful attacker: a change that still looks valid (data may now leave Nigeria), fingerprint updated too.
         c[i].data.terms.cross_border_transfer = true;
         c[i].data.terms_digest = await digestOf(c[i].data.terms);
         // Recompute every hash after the edit, so the chain links again. Only outside copies can catch this.
         for (let k = 0; k < c.length; k++) { c[k].prev = k ? c[k - 1].hash : '0'.repeat(64); c[k].hash = await hashEntry(c[k]); }
-        return `Changed entry #${i} so this person's data may leave Nigeria, updated its fingerprint, and recomputed every hash after it. The chain links perfectly. Only something held OUTSIDE the ledger can catch this: the receipt the person kept, or a published head hash.`;
-      }) }, 'Rewrite + re-hash')),
+        return T('lg_t_rw_note', { i });
+      }) }, T('lg_t_rw_btn'))),
     out);
 }
 
@@ -91,34 +103,36 @@ function renderReceipt() {
   const check = async (text) => {
     try {
       const r = await verifyReceipt(JSON.parse(text), commons.entries);
-      out.replaceChildren(el('div', { class: `callout ${r.ok ? 'callout-good' : 'callout-bad'}` }, el('b', {}, r.ok ? '✓ Receipt is genuine and matches the ledger' : '✗ Receipt check failed'), r.status ? el('div', {}, `Consent status now: ${r.status}`) : null),
-        el('ul', {}, r.checks.map((c) => el('li', {}, el('span', { class: c.ok ? 'check-ok' : 'check-bad' }, c.ok ? '✓ ' : '✗ '), el('b', {}, c.name + ': '), c.detail))));
-    } catch (e) { out.replaceChildren(el('div', { class: 'callout callout-bad' }, 'Not a valid receipt JSON: ' + e.message)); }
+      out.replaceChildren(el('div', { class: `callout ${r.ok ? 'callout-good' : 'callout-bad'}` }, el('b', {}, r.ok ? T('lg_rc_ok') : T('lg_rc_bad')), r.status ? el('div', {}, T('lg_rc_status', { s: T('cs_' + r.status) })) : null),
+        el('ul', {}, r.checks.map((c) => el('li', {}, el('span', { class: c.ok ? 'check-ok' : 'check-bad' }, c.ok ? '✓ ' : '✗ '), el('b', {}, T('rc_' + c.id) + ': '), c.msg ? tmsg(getLang(), c.msg) : c.detail))));
+    } catch (e) { out.replaceChildren(el('div', { class: 'callout callout-bad' }, T('lg_rc_invalid', { e: e.message }))); }
   };
-  const ta = el('textarea', { placeholder: 'Paste a receipt JSON here, or load your last one / a file.' });
+  const ta = el('textarea', { placeholder: T('lg_rc_ph') });
   const last = sessionStorage.getItem(RKEY);
   const file = el('input', { type: 'file', accept: '.json', hidden: true });
   file.addEventListener('change', async () => { const f = file.files[0]; if (f) { ta.value = await f.text(); check(ta.value); } });
-  $('#receipt-card').replaceChildren(el('span', { id: 'verify-receipt' }), el('h2', {}, 'Check a receipt'),
-    el('p', { class: 'small muted' }, 'A receipt is the person\'s own proof of what they agreed to. It is signed by the commons and names the exact ledger entry, so it also catches a ledger that was rewritten from scratch.'),
+  $('#receipt-card').replaceChildren(el('span', { id: 'verify-receipt' }), el('h2', {}, T('lg_rc_h')),
+    el('p', { class: 'small muted' }, T('lg_rc_p')),
     ta, el('div', { class: 'row', style: 'margin:.5rem 0' },
-      el('button', { class: 'btn btn-primary btn-sm', type: 'button', onclick: () => check(ta.value) }, 'Check'),
-      last ? el('button', { class: 'btn btn-sm', type: 'button', onclick: () => { ta.value = last; check(last); } }, 'Use my last receipt from the chat') : null,
-      el('label', { class: 'btn btn-sm' }, 'Load file', file),
-      el('button', { class: 'btn btn-sm', type: 'button', onclick: async () => { const r = await commons.reissueReceipt(commons.entries.findIndex((e) => e.type === 'CONSENT_GRANTED')); ta.value = JSON.stringify(r, null, 2); check(ta.value); } }, 'Try a sample receipt')),
+      el('button', { class: 'btn btn-primary btn-sm', type: 'button', onclick: () => check(ta.value) }, T('lg_rc_check')),
+      last ? el('button', { class: 'btn btn-sm', type: 'button', onclick: () => { ta.value = last; check(last); } }, T('lg_rc_last')) : null,
+      el('label', { class: 'btn btn-sm' }, T('lg_rc_file'), file),
+      el('button', { class: 'btn btn-sm', type: 'button', onclick: async () => { const r = await commons.reissueReceipt(commons.entries.findIndex((e) => e.type === 'CONSENT_GRANTED')); ta.value = JSON.stringify(r, null, 2); check(ta.value); } }, T('lg_rc_sample'))),
     out);
 }
 
 $('#export').addEventListener('click', () => download('consent-commons-ledger.jsonl', commons.ledger.toJSONL()));
 $('#import').addEventListener('change', async (ev) => {
   const f = ev.target.files[0]; if (!f) return;
-  try { await renderVerify(Ledger.parseJSONL(await f.text()), `File: ${f.name}`); toast('Audited the uploaded file (the demo ledger was not changed)'); }
-  catch (e) { toast(e.message, 'bad'); }
+  try { await renderVerify(Ledger.parseJSONL(await f.text()), T('lg_file', { name: f.name })); toast(T('lg_audited')); }
+  catch (e) { toast(errText(e), 'bad'); }
 });
-$('#reset').addEventListener('click', async () => { if (confirm('Start the demo over? Your chat consents and votes in this browser will be cleared.')) { commons = await resetDemo(); renderAll(); toast('Demo reset'); } });
+$('#reset').addEventListener('click', async () => { if (confirm(T('lg_reset_confirm'))) { commons = await resetDemo(); renderAll(); toast(T('lg_reset_done')); } });
 
 async function renderAll() { await renderVerify(); renderEntries(); renderTamper(); renderReceipt(); }
 commons = await loadCommons();
 onExternalChange(async (c) => { commons = c; renderAll(); });
+// On a language change, keep an uploaded file's result on screen only if one is showing; otherwise redraw everything.
+onLang(() => { renderVerify(shown?.entries, shown?.label); renderEntries(); renderTamper(); renderReceipt(); });
 await renderAll();
 if (location.hash === '#verify-receipt') $('#receipt-card').scrollIntoView();

@@ -75,15 +75,15 @@ export async function verifyChain(entries) {
   let prev = GENESIS_PREV, lastTs = '';
   for (let i = 0; i < entries.length; i++) {
     const e = entries[i];
-    const fail = (reason) => ({ ok: false, entries: entries.length, brokenAt: i, reason });
-    if (!e || typeof e !== 'object') return fail('entry is not an object');
-    if (e.seq !== i) return fail(`sequence number is ${e.seq}, expected ${i} (an entry was removed, added or reordered)`);
-    if (e.prev !== prev) return fail('prev does not match the hash of the entry before it');
-    if (!ENTRY_TYPES.includes(e.type)) return fail(`unknown entry type ${e.type}`);
-    if (i === 0 && e.type !== 'GENESIS') return fail('first entry must be GENESIS');
-    if (i > 0 && e.type === 'GENESIS') return fail('only the first entry may be GENESIS');
-    if (typeof e.ts !== 'string' || e.ts < lastTs) return fail('timestamp goes backwards');
-    if ((await hashEntry(e)) !== e.hash) return fail('entry content does not match its hash (it was edited)');
+    const fail = (reason, code) => ({ ok: false, entries: entries.length, brokenAt: i, reason, code });
+    if (!e || typeof e !== 'object') return fail('entry is not an object', 'not_object');
+    if (e.seq !== i) return fail(`sequence number is ${e.seq}, expected ${i} (an entry was removed, added or reordered)`, 'seq');
+    if (e.prev !== prev) return fail('prev does not match the hash of the entry before it', 'prev');
+    if (!ENTRY_TYPES.includes(e.type)) return fail(`unknown entry type ${e.type}`, 'type');
+    if (i === 0 && e.type !== 'GENESIS') return fail('first entry must be GENESIS', 'first_genesis');
+    if (i > 0 && e.type === 'GENESIS') return fail('only the first entry may be GENESIS', 'genesis_only_first');
+    if (typeof e.ts !== 'string' || e.ts < lastTs) return fail('timestamp goes backwards', 'ts_back');
+    if ((await hashEntry(e)) !== e.hash) return fail('entry content does not match its hash (it was edited)', 'hash');
     prev = e.hash; lastTs = e.ts;
   }
   return { ok: true, entries: entries.length, head: entries.length ? prev : null };

@@ -6,6 +6,7 @@ import { newPersonalCode } from '/src/core/hash.js';
 import { PURPOSES, DATA_CATEGORIES, PERMITTED_USERS, BENEFITS, DEIDENTIFICATION, DURATIONS_DAYS } from '/src/core/vocab.js';
 import { loadCommons, save, RKEY } from './store.js';
 import { el, $, download } from './ui.js';
+import { setLang as setSiteLang, onLang } from './lang.js';
 
 const log = $('#log');
 const input = $('#input');
@@ -102,7 +103,7 @@ $('#composer').addEventListener('submit', (ev) => {
 function restart(flow) {
   cancelPending(); runId++;
   const id = runId;
-  flow().catch((e) => { if (!(e instanceof Abort)) { console.error(e); system('Error: ' + e.message); } }).finally(() => { if (id === runId && !pending) menu().catch(() => {}); });
+  flow().catch((e) => { if (!(e instanceof Abort)) { console.error(e); system(u('chat_error', { e: e.message })); } }).finally(() => { if (id === runId && !pending) menu().catch(() => {}); });
 }
 
 const opts = (vocab, prefix) => Object.keys(vocab).map((k) => ({ value: k, label: t(prefix + k) }));
@@ -113,20 +114,21 @@ assistedBox.addEventListener('change', () => { sessionStorage.setItem('cc.assist
 function ussdLink() { log.append(el('a', { class: 'msg system ussd-link', href: '/ussd.html' }, u('us_link'))); scroll(); }
 
 function setLang(l) {
-  lang = l; localStorage.setItem('cc.lang', l); langSel.value = l;
+  lang = l; setSiteLang(l); langSel.value = l;
   document.documentElement.lang = l === 'pcm' ? 'pcm' : l;
   $('#h-title').textContent = t('title'); setSub();
   $('#as-toggle').textContent = u('as_toggle'); $('#as-note').textContent = u('as_note'); $('#us-link').textContent = u('us_link');
   input.placeholder = t('placeholder'); $('#menu-btn').textContent = t('menu_btn');
 }
-langSel.addEventListener('change', () => { setLang(langSel.value); system(`${LOCALES[lang].meta.name} · ${lang === 'en' ? 'source text' : 'DRAFT translation, not reviewed by native speakers'}`); restart(menu); });
+// The phone's own picker and the top-bar picker share one setting (web/js/lang.js).
+onLang((l) => { if (l === lang) return; setLang(l); system(`${LOCALES[lang].meta.name} · ${lang === 'en' ? u('chat_sys_source') : u('chat_sys_draft')}`); restart(menu); });
 $('#menu-btn').addEventListener('click', () => restart(menu));
 
 async function chooseLanguage() {
   system('Choose a language · Choose language · Yan èdè');
   const l = await choose([{ value: 'en', label: 'English' }, { value: 'pcm', label: 'Pidgin (Naijá)' }, { value: 'yo', label: 'Yorùbá' }]);
   setLang(l);
-  if (l !== 'en') system(l === 'pcm' ? 'DRAFT: native speaker never check dis Pidgin yet · Draft translation, not yet reviewed' : 'DRAFT translation: not yet reviewed by native speakers.');
+  if (l !== 'en') system(`${LOCALES[l].meta.name} · ${u('chat_sys_draft')}`);
 }
 
 function summaryCard(c) {
@@ -202,7 +204,7 @@ async function consentFlow() {
     el('div', { class: 'small' }, '⚠️ ' + t('code_warning')),
     terms.collected_via === 'assisted_offline_demo' ? el('div', { class: 'small', style: 'margin-top:.35rem' }, el('span', { class: 'pill pill-info' }, u('as_receipt'))) : null,
     el('div', { class: 'small', style: 'margin-top:.35rem' }, el('a', { href: '/ussd.html' }, u('us_link'))),
-    el('div', { class: 'small muted', style: 'margin-top:.35rem' }, `Ledger entry #${receipt.ledger_entry.seq} · ${receipt.ledger_entry.hash.slice(0, 16)}… ${receipt.signature ? '· signed' : ''}`),
+    el('div', { class: 'small muted', style: 'margin-top:.35rem' }, `${u('chat_entry', { seq: receipt.ledger_entry.seq })} · ${receipt.ledger_entry.hash.slice(0, 16)}… ${receipt.signature ? `· ${u('chat_signed')}` : ''}`),
     el('div', { class: 'row', style: 'margin-top:.5rem' },
       el('button', { class: 'btn btn-primary btn-sm', type: 'button', onclick: () => download(`consent-receipt-${terms.terms_id}.json`, kept) }, t('download')),
       el('a', { class: 'btn btn-sm', href: '/ledger.html#verify-receipt' }, t('verify')))));
@@ -236,7 +238,7 @@ async function withdrawFlow() {
   save(commons);
   await say('withdrawn_done', { n: notices.length });
   log.append(el('div', { class: 'rcard' }, el('h4', {}, `🧾 ${t('receipt')}`),
-    el('div', { class: 'small muted' }, `Ledger entry #${receipt.ledger_entry.seq} · ${receipt.ledger_entry.hash.slice(0, 16)}…`),
+    el('div', { class: 'small muted' }, `${u('chat_entry', { seq: receipt.ledger_entry.seq })} · ${receipt.ledger_entry.hash.slice(0, 16)}…`),
     el('button', { class: 'btn btn-primary btn-sm', type: 'button', style: 'margin-top:.4rem', onclick: () => download(`withdrawal-receipt-${c.terms.terms_id}.json`, receipt) }, t('download'))));
   ussdLink();
 }
@@ -250,6 +252,6 @@ async function menu() {
 }
 
 if (lang) setLang(lang); else { setSub(); $('#as-toggle').textContent = u('as_toggle'); $('#as-note').textContent = u('as_note'); $('#us-link').textContent = u('us_link'); }
-system('SYNTHETIC DEMO · nothing you type leaves this browser');
+system(u('chat_sys_demo'));
 const params = new URLSearchParams(location.search);
 restart(params.get('start') === 'withdraw' ? withdrawFlow : consentFlow);

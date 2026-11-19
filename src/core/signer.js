@@ -47,12 +47,12 @@ export async function createSigner(saved) {
 /** Verify a signature block over a value. Optionally insist on a specific trusted public key. */
 export async function verifySignature(value, signature, { trustedKeyId } = {}) {
   try {
-    if (!signature || signature.alg !== 'Ed25519') return { ok: false, reason: 'missing or unsupported signature' };
+    if (!signature || signature.alg !== 'Ed25519') return { ok: false, code: 'sig_missing', reason: 'missing or unsupported signature' };
     const keyId = (await digestOf(signature.public_key)).slice(0, 16);
-    if (keyId !== signature.key_id) return { ok: false, reason: 'key id does not match the public key' };
-    if (trustedKeyId && keyId !== trustedKeyId) return { ok: false, reason: 'signed by a key this commons does not use' };
+    if (keyId !== signature.key_id) return { ok: false, code: 'sig_keyid', reason: 'key id does not match the public key' };
+    if (trustedKeyId && keyId !== trustedKeyId) return { ok: false, code: 'sig_untrusted', reason: 'signed by a key this commons does not use' };
     const key = await subtle().importKey('jwk', { ...signature.public_key, ext: true }, ALG, false, ['verify']);
     const ok = await subtle().verify(ALG, key, unb64u(signature.value), new TextEncoder().encode(canonicalize(value)));
-    return ok ? { ok: true, keyId } : { ok: false, reason: 'signature does not match the content (it was changed)' };
-  } catch (e) { return { ok: false, reason: `could not verify: ${e.message}` }; }
+    return ok ? { ok: true, keyId } : { ok: false, code: 'sig_changed', reason: 'signature does not match the content (it was changed)' };
+  } catch (e) { return { ok: false, code: 'sig_error', reason: `could not verify: ${e.message}` }; }
 }

@@ -5,8 +5,9 @@ import { el, $ } from './ui.js';
 import { UssdSession, USSD_CODE } from '/src/core/ussd.js';
 import { DEMO_SAMPLE_CODE } from '/src/core/seed.js';
 import { tu, LOCALES } from '/src/i18n/index.js';
+import { getLang, onLang } from './lang.js';
 
-let lang = LOCALES[localStorage.getItem('cc.lang')] ? localStorage.getItem('cc.lang') : 'en';
+let lang = getLang();
 const u = (k, v) => tu(lang, k, v);
 const screen = $('#screen'), reply = $('#reply');
 let session = null, screenLang = null, busy = false, lastScreen = null;
@@ -14,8 +15,8 @@ let session = null, screenLang = null, busy = false, lastScreen = null;
 function lastCode() { try { return JSON.parse(sessionStorage.getItem(RKEY) || 'null')?.withdrawal_code ?? null; } catch { return null; } }
 
 function setStatic() {
-  document.documentElement.lang = lang; $('#lang').value = lang;
-  for (const [id, k] of [['u-title', 'us_title'], ['u-lang-label', 'sum_lang'], ['u-intro', 'us_intro'], ['u-how', 'us_how'], ['u-steps', 'us_steps'], ['u-sample-label', 'us_sample'], ['u-last-label', 'us_last'], ['u-letters', 'us_letters'], ['reply-label', 'us_reply'], ['send', 'us_send'], ['call', 'us_call'], ['end', 'us_end']]) $('#' + id).textContent = u(k);
+  document.documentElement.lang = lang;
+  for (const [id, k] of [['u-title', 'us_title'], ['u-intro', 'us_intro'], ['u-how', 'us_how'], ['u-steps', 'us_steps'], ['u-sample-label', 'us_sample'], ['u-last-label', 'us_last'], ['u-letters', 'us_letters'], ['reply-label', 'us_reply'], ['send', 'us_send'], ['call', 'us_call'], ['end', 'us_end']]) $('#' + id).textContent = u(k);
   $('#del').setAttribute('aria-label', u('us_clear'));
   $('#screen-wrap').setAttribute('aria-label', u('us_screen'));
   $('#sample-code').textContent = DEMO_SAMPLE_CODE;
@@ -71,6 +72,6 @@ $('#reply-form').addEventListener('submit', (e) => { e.preventDefault(); submit(
 $('#call').addEventListener('click', submit);
 $('#end').addEventListener('click', idle);
 $('#use-sample').addEventListener('click', () => fill(DEMO_SAMPLE_CODE));
-$('#lang').addEventListener('change', () => { lang = $('#lang').value; localStorage.setItem('cc.lang', lang); setStatic(); });
+onLang((l) => { lang = l; setStatic(); });
 await loadCommons(); // make sure this browser has its demo commons before the first dial
 setStatic();

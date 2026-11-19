@@ -19,7 +19,7 @@
     "request_digest": "00b1f368edd1a5c6f60974f7179a7623e47b6c869b000e0137e1548099498877"
   },
   "approval": {
-    "decision_entry": "9edf0b14e90b29ad732ed8b6f66681f0ff4767822c63cec1b0163d397dec3280",
+    "decision_entry": "64018c0474afce2c7c193b173374ed02ee19eedb7c5411345300cfa518f36ec5",
     "tally": {
       "outcome": "approved",
       "approvals": 3,
@@ -30,9 +30,9 @@
       "seats": 5
     },
     "vote_entries": [
-      "bff6b4b41f25f0f2c4719dd0b0008c5864985c44761be112beb1796c70d5bd1c",
-      "ce9a47db50d61a0a7cce1a9e34c37401dd8deba7194200786ca87567eba70d36",
-      "5e30744ef6674b5579066aec4eb1162c9200cb36fbb80bfae8fa1a3ffea71883"
+      "43212f4b38ac0b299d00f301560420442a22a00bfd0a8cb1c8fc4a5ab431b339",
+      "9f4e8a85341ffd89119a5422565744e2717ecb9b740af8ee93d1c87bca244196",
+      "95941ab5a8654a6f0bb886743f7ec2f5131064261aa408b6af475710f4d98eaf"
     ]
   },
   "terms": {
@@ -106,7 +106,7 @@
     },
     {
       "record_id": "r_088f735735b620a4",
-      "terms_digest": "bd70033daf2a2107c1188e53873e9585881e0e6878fc5264456f0ba8278ba389"
+      "terms_digest": "2548f409334cd88ef0aacd59e3ffeb578c2edd6231acae3234f8a1ecc4b2de04"
     },
     {
       "record_id": "r_0f29e36b23a3e082",
@@ -114,7 +114,7 @@
     },
     {
       "record_id": "r_1eeafe69f3ccfc02",
-      "terms_digest": "230bb4cea700d8127f49d173b8eccdb3144fe3a2e30eeb75c7357328fc8d8af5"
+      "terms_digest": "e132e8f7f903c3e78aa5f39604947e6f3c7eb36b6a8f13e4ec5dae9f2d24c83a"
     },
     {
       "record_id": "r_41a1448ae2c70b99",
@@ -126,7 +126,7 @@
     },
     {
       "record_id": "r_6a593418a9dd1882",
-      "terms_digest": "4c35676035355321e47d03cf94cbb513aae1c03a6a5808f7996e0e8d22c136aa"
+      "terms_digest": "77a008e00363ae9e978bc371da76d364d2a61d426bc894e33251f1d583aca501"
     },
     {
       "record_id": "r_7619172a133d6f58",
@@ -134,7 +134,7 @@
     },
     {
       "record_id": "r_7bacedd6ecbfa01d",
-      "terms_digest": "54173a125863c2946d17073fbbe72c1e38d8acb61677ff305b470bf7dd4a5332"
+      "terms_digest": "4dab4a3b1a744fc545508f7da17108a15f257c4c465a30ae35b976e230b770c4"
     },
     {
       "record_id": "r_97a9ffc9c36e0ba8",
@@ -142,11 +142,11 @@
     },
     {
       "record_id": "r_a891c0e3b28af987",
-      "terms_digest": "c53484eddf345433c94166b0fdaeed58cc8dc231d8545d41098873d1acd1d6ac"
+      "terms_digest": "f969c92cdedcc0b6db91fa464ec0b137771ce9fd7306f330be46b44d39d47bfa"
     },
     {
       "record_id": "r_b03e97d161846a89",
-      "terms_digest": "7049617c8836d87512686405f1b8a9ddfa47389df84429e24c5567e90e248f32"
+      "terms_digest": "96adf03d121168d09cb33aab24a6fc6e6c700727f8816edd6642101e668f19fd"
     },
     {
       "record_id": "r_bfa342fc7121da27",
@@ -154,7 +154,7 @@
     },
     {
       "record_id": "r_c60e2747cb329e79",
-      "terms_digest": "47db18090282a868f48a143e65639862861faafe6cdc9d2aa812809736a94900"
+      "terms_digest": "714786492036fdef6b53321e070ffdc51fd805732701449617164e2f33c5d04a"
     },
     {
       "record_id": "r_c7266072b6efb110",
@@ -171,16 +171,16 @@
   ],
   "record_count": 17,
   "dataset_digest": "735b271e0bbfd8283bd7c7e7488059312913c272b14af4674ab36743ff77247e",
-  "ledger_head_before_release": "9edf0b14e90b29ad732ed8b6f66681f0ff4767822c63cec1b0163d397dec3280",
+  "ledger_head_before_release": "64018c0474afce2c7c193b173374ed02ee19eedb7c5411345300cfa518f36ec5",
   "synthetic": true,
   "signature": {
     "alg": "Ed25519",
-    "key_id": "ced4865d26ccdd32",
+    "key_id": "c02a3642802fd813",
     "public_key": {
       "kty": "OKP",
       "crv": "Ed25519",
-      "x": "ESCiaZxnQFkpnuiF9C6ljHeXuwZM47Ht7pyknuMV2do"
+      "x": "4XdjjoMrRyGJwUJScvyt7bUm42evC4YrOXABhpnNSBI"
     },
-    "value": "U9_bp1Bu8qlMpXiwcSkYwqhw7ysKp3ZV0e3bRxN-GHpmz467WFnf2QP4YlyudD-zP5NFDqt8nv9N4KE-7VqiAA"
+    "value": "5h7ZR8CgjnaFE9glPyH1O6XX6C7u6jmCWU1EVJZpBRPxaeR2k_VenzE_NDIakPSNl40ZJW6tYnJ6njzJUzEaBQ"
   }
 }

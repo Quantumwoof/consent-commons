@@ -3,24 +3,24 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Consent chat · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_chat">
 <meta name="description" content="A plain-language consent conversation in English, Nigerian Pidgin and Yorùbá, with comprehension checks and withdrawal. Synthetic demo.">
 <link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
 </head>
 <body>
 <!--CHROME:chat-->
 <main class="chat-page">
-  <div class="phone" aria-label="Consent conversation">
+  <div class="phone" aria-label="Consent conversation" data-i18n-attr="aria-label:chat_aria_log">
     <header>
       <div class="avatar" aria-hidden="true">CC</div>
       <div><div class="title" id="h-title">Consent Commons</div><div class="sub" id="h-sub">Demo · synthetic data</div></div>
       <span class="spacer"></span>
-      <label class="sr-only" for="lang" style="position:absolute;left:-9999px">Language</label>
-      <select id="lang" aria-label="Language"><option value="en">English</option><option value="pcm">Pidgin</option><option value="yo">Yorùbá</option></select>
+      <select id="lang" class="cc-lang" aria-label="Language" data-i18n-attr="aria-label:chat_aria_lang"><option value="en">English</option><option value="pcm">Pidgin</option><option value="yo">Yorùbá</option></select>
       <button class="hbtn" id="menu-btn" type="button">Menu</button>
     </header>
     <div class="log" id="log" role="log" aria-live="polite" aria-relevant="additions"></div>
     <form class="composer" id="composer" autocomplete="off">
-      <input type="text" id="input" aria-label="Message" placeholder="Type a message">
+      <input type="text" id="input" aria-label="Message" data-i18n-attr="aria-label:chat_aria_msg" placeholder="Type a message">
       <button type="submit" aria-label="Send">➤</button>
     </form>
   </div>
@@ -29,11 +29,12 @@
     <p class="small muted" id="as-note" style="margin:.35rem 0 0"></p>
     <p class="small" style="margin:.5rem 0 0"><a href="/ussd.html" id="us-link">No data? Try the USSD simulation (*347*22#)</a></p>
   </div>
-  <div class="side-note callout callout-warn small" id="tr-note">
+  <div class="side-note callout callout-warn small" id="tr-note" data-i18n-html="chat_tr_html">
     <b>Translation status:</b> the Pidgin and Yorùbá text is an <b>unreviewed draft</b>. It has not been checked by native speakers and must not be used with real people until it is. Each consent record stores which wording was shown and its review status.
   </div>
-  <p class="small muted">Tip: like on WhatsApp, you can reply with the option number. Type <b>MENU</b> at any time. On this demo, nothing you type leaves your browser.</p>
+  <p class="small muted" data-i18n-html="chat_tip_html">Tip: like on WhatsApp, you can reply with the option number. Type <b>MENU</b> at any time. On this demo, nothing you type leaves your browser.</p>
 </main>
+<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
 <script type="module" src="/js/chat.js"></script>
 </body>
 </html>
