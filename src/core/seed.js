@@ -12,6 +12,9 @@ const T0 = Date.parse('2026-10-01T08:00:00.000Z');
 const at = (days, hours = 0) => new Date(T0 + days * 86400000 + hours * 3600000).toISOString();
 
 export const SEED_PEOPLE = 60;
+/** Withdrawal code of one SYNTHETIC seeded person (active, and in the released Ibadan study), published so
+ *  anyone can try check/withdraw (e.g. over the USSD simulation). The seed is deterministic; a test pins it. */
+export const DEMO_SAMPLE_CODE = 'SKFC-PY7G-0W5M-WDT0';
 
 export async function seedCommons({ signer = null, seed = 20261201 } = {}) {
   const rng = mulberry32(seed);

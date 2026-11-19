@@ -2,7 +2,7 @@
 // published schemas can never drift apart. `npm test` fails if the committed schemas are out of date.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { PURPOSES, DATA_CATEGORIES, PERMITTED_USERS, BENEFITS, DEIDENTIFICATION, LANGUAGES, TRANSLATION_STATUS, SCHEMA_VERSION, SCHEMA_BASE, WITHDRAWAL_EFFECT } from '../src/core/vocab.js';
+import { PURPOSES, DATA_CATEGORIES, PERMITTED_USERS, BENEFITS, DEIDENTIFICATION, LANGUAGES, TRANSLATION_STATUS, COLLECTION_CHANNELS, SCHEMA_VERSION, SCHEMA_BASE, WITHDRAWAL_EFFECT } from '../src/core/vocab.js';
 import { ENTRY_TYPES } from '../src/core/ledger.js';
 
 const K = Object.keys;
@@ -42,7 +42,7 @@ export function schemas() {
       withdrawal: { type: 'object', additionalProperties: false, required: ['allowed', 'effect', 'recipient_deletion_days'], properties: { allowed: { const: true }, effect: { const: WITHDRAWAL_EFFECT }, recipient_deletion_days: { type: 'integer', minimum: 1, maximum: 90 } } },
       recontact_allowed: { type: 'boolean' },
       comprehension: { type: 'object', additionalProperties: false, required: ['questions', 'correct_first_try', 'attempts', 'passed'], properties: { questions: { type: 'integer', minimum: 1 }, correct_first_try: { type: 'integer', minimum: 0 }, attempts: { type: 'integer', minimum: 1 }, passed: { const: true } } },
-      collected_via: { type: 'string' },
+      collected_via: { type: 'string', description: 'How the consent was collected. Informational only; changes no rule. Known values: ' + desc(COLLECTION_CHANNELS) },
       synthetic: { type: 'boolean', description: 'True for demo data. Real deployments set false.' },
     },
   };

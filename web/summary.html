@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Release summary in plain words · Consent Commons (synthetic demo)</title>
+<meta name="description" content="One data release explained in plain words for community meetings, in English, Pidgin and Yorùbá, with a verification check against the ledger. Synthetic demo.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:review-->
+<main class="wrap sum-page">
+  <div class="row sum-head">
+    <h1 id="s-title" style="margin:0">Release summary in plain words</h1><span class="spacer"></span>
+    <label class="sum-lang"><span id="s-lang-label">Language</span>
+      <select id="lang"><option value="en">English</option><option value="pcm">Pidgin</option><option value="yo">Yorùbá</option></select></label>
+    <button class="btn btn-sm no-print" id="print" type="button">Print</button>
+  </div>
+  <p class="no-print"><a id="back" href="/review.html#releases">← Back to releases</a></p>
+  <div id="summary" aria-live="polite"></div>
+</main>
+<script type="module" src="/js/summary.js"></script>
+</body>
+</html>

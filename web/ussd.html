@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USSD simulation · Consent Commons (synthetic demo)</title>
+<meta name="description" content="A simulated USSD session (*347*22#, example code) to check consent or take it back from a basic phone with no data, using the same ledger as the consent chat. Simulation only: no phone network.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:ussd-->
+<main class="wrap ussd-page">
+  <div class="row" style="margin-bottom:.5rem">
+    <h1 id="u-title" style="margin:0">USSD on any phone (simulation)</h1><span class="spacer"></span>
+    <label class="sum-lang"><span id="u-lang-label">Language</span>
+      <select id="lang"><option value="en">English</option><option value="pcm">Pidgin</option><option value="yo">Yorùbá</option></select></label>
+  </div>
+  <div class="callout callout-warn small" id="u-intro"></div>
+  <div class="ussd-layout">
+    <div class="fphone" role="group" aria-labelledby="u-title">
+      <div class="fphone-brand" aria-hidden="true">DEMO</div>
+      <div class="fscreen" id="screen-wrap">
+        <div class="fscreen-text" id="screen" role="status" aria-live="polite" aria-atomic="true"></div>
+        <form id="reply-form" class="freply" autocomplete="off">
+          <label for="reply" class="sr-only" id="reply-label">Reply</label>
+          <input id="reply" type="text" inputmode="tel" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="send">
+          <button type="submit" id="send">Send</button>
+        </form>
+      </div>
+      <div class="fkeys" id="keys"></div>
+      <div class="fcontrols">
+        <button type="button" class="fcall" id="call">Call</button>
+        <button type="button" class="fdel" id="del" aria-label="Delete last character">⌫</button>
+        <button type="button" class="fend" id="end">End</button>
+      </div>
+    </div>
+    <div class="grid ussd-side">
+      <div class="card">
+        <h2 id="u-how" style="font-size:1.1rem">How to try it</h2>
+        <p class="small" id="u-steps"></p>
+        <div class="grid" style="gap:.5rem">
+          <div><div class="small muted" id="u-sample-label"></div>
+            <div class="row"><span class="code-box" id="sample-code"></span><button class="btn btn-sm" type="button" id="use-sample"></button></div></div>
+          <div><div class="small muted" id="u-last-label"></div>
+            <div class="row" id="last-row"></div></div>
+        </div>
+        <p class="small muted" id="u-letters" style="margin-bottom:0"></p>
+      </div>
+      <div class="card" id="after" hidden></div>
+    </div>
+  </div>
+</main>
+<script type="module" src="/js/ussd.js"></script>
+</body>
+</html>

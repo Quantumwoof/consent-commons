@@ -1,6 +1,6 @@
 // The consent conversation. A small state machine: each step asks one thing in plain words, in the
 // person's language. Nothing is recorded until the comprehension check is passed AND they say yes.
-import { LOCALES, t as tr, noticeFor, comprehensionQuestions } from '/src/i18n/index.js';
+import { LOCALES, t as tr, tu, noticeFor, comprehensionQuestions } from '/src/i18n/index.js';
 import { buildTerms } from '/src/core/terms.js';
 import { newPersonalCode } from '/src/core/hash.js';
 import { PURPOSES, DATA_CATEGORIES, PERMITTED_USERS, BENEFITS, DEIDENTIFICATION, DURATIONS_DAYS } from '/src/core/vocab.js';
@@ -12,6 +12,12 @@ const input = $('#input');
 const langSel = $('#lang');
 let lang = localStorage.getItem('cc.lang') || null;
 const t = (k, v) => tr(lang ?? 'en', k, v);
+const u = (k, v) => tu(lang ?? 'en', k, v);
+// "Assisted" is a DEMO LABEL: it records collected_via = assisted_offline_demo in the consent terms. The record is
+// still written straight away in this browser; offline storage and later sync on a worker's device are not built.
+const assistedBox = $('#assisted');
+assistedBox.checked = sessionStorage.getItem('cc.assisted') === '1';
+const assisted = () => assistedBox.checked;
 const yoOk = Intl.DateTimeFormat.supportedLocalesOf(['yo-NG']).length > 0;
 const LOCALE_FMT = { en: 'en-GB', pcm: 'en-GB', yo: yoOk ? 'yo-NG' : 'en-GB' };
 const fmt = (iso) => new Date(iso).toLocaleDateString(LOCALE_FMT[lang] ?? 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -102,10 +108,15 @@ function restart(flow) {
 const opts = (vocab, prefix) => Object.keys(vocab).map((k) => ({ value: k, label: t(prefix + k) }));
 const yesNo = () => [{ value: 'yes', label: t('yes') }, { value: 'no', label: t('no') }];
 
+function setSub() { $('#h-sub').textContent = assisted() ? `${t('subtitle')} · ${u('as_badge')}` : t('subtitle'); }
+assistedBox.addEventListener('change', () => { sessionStorage.setItem('cc.assisted', assisted() ? '1' : '0'); setSub(); system(assisted() ? u('as_badge') : t('subtitle')); });
+function ussdLink() { log.append(el('a', { class: 'msg system ussd-link', href: '/ussd.html' }, u('us_link'))); scroll(); }
+
 function setLang(l) {
   lang = l; localStorage.setItem('cc.lang', l); langSel.value = l;
   document.documentElement.lang = l === 'pcm' ? 'pcm' : l;
-  $('#h-title').textContent = t('title'); $('#h-sub').textContent = t('subtitle');
+  $('#h-title').textContent = t('title'); setSub();
+  $('#as-toggle').textContent = u('as_toggle'); $('#as-note').textContent = u('as_note'); $('#us-link').textContent = u('us_link');
   input.placeholder = t('placeholder'); $('#menu-btn').textContent = t('menu_btn');
 }
 langSel.addEventListener('change', () => { setLang(langSel.value); system(`${LOCALES[lang].meta.name} · ${lang === 'en' ? 'source text' : 'DRAFT translation, not reviewed by native speakers'}`); restart(menu); });
@@ -177,7 +188,7 @@ async function consentFlow() {
 
   const commons = await loadCommons({ fresh: true });
   const { commons: info } = await commons.state();
-  const terms = buildTerms(c, { commons: info, notice: await noticeFor(lang), comprehension: { questions: 4, correct_first_try: firstTry, attempts, passed: true } });
+  const terms = buildTerms(c, { commons: info, notice: await noticeFor(lang), comprehension: { questions: 4, correct_first_try: firstTry, attempts, passed: true }, channel: assisted() ? 'assisted_offline_demo' : 'web_chat_demo' });
   const code = newPersonalCode();
   const { receipt } = await commons.grantConsent(terms, { withdrawalCode: code });
   save(commons);
@@ -189,6 +200,8 @@ async function consentFlow() {
     el('div', { class: 'small' }, t('code_label')),
     el('div', { class: 'code-box', 'aria-label': t('code_label') }, code),
     el('div', { class: 'small' }, '⚠️ ' + t('code_warning')),
+    terms.collected_via === 'assisted_offline_demo' ? el('div', { class: 'small', style: 'margin-top:.35rem' }, el('span', { class: 'pill pill-info' }, u('as_receipt'))) : null,
+    el('div', { class: 'small', style: 'margin-top:.35rem' }, el('a', { href: '/ussd.html' }, u('us_link'))),
     el('div', { class: 'small muted', style: 'margin-top:.35rem' }, `Ledger entry #${receipt.ledger_entry.seq} · ${receipt.ledger_entry.hash.slice(0, 16)}… ${receipt.signature ? '· signed' : ''}`),
     el('div', { class: 'row', style: 'margin-top:.5rem' },
       el('button', { class: 'btn btn-primary btn-sm', type: 'button', onclick: () => download(`consent-receipt-${terms.terms_id}.json`, kept) }, t('download')),
@@ -210,6 +223,7 @@ async function checkFlow() {
   if (c.status === 'withdrawn') await say('status_withdrawn', { date: fmt(c.withdrawn_at) });
   else if (c.status === 'expired') await say('status_expired', { date: fmt(c.terms.expires_at) });
   else await say('status_active', { date: fmt(c.terms.expires_at) });
+  ussdLink();
   summaryCard({ ...c.terms, purposes: c.terms.purposes.allowed, benefits: c.terms.benefit_sharing.required, duration_days: Math.round((Date.parse(c.terms.expires_at) - Date.parse(c.terms.granted_at)) / 86400000) });
 }
 
@@ -224,7 +238,7 @@ async function withdrawFlow() {
   log.append(el('div', { class: 'rcard' }, el('h4', {}, `🧾 ${t('receipt')}`),
     el('div', { class: 'small muted' }, `Ledger entry #${receipt.ledger_entry.seq} · ${receipt.ledger_entry.hash.slice(0, 16)}…`),
     el('button', { class: 'btn btn-primary btn-sm', type: 'button', style: 'margin-top:.4rem', onclick: () => download(`withdrawal-receipt-${c.terms.terms_id}.json`, receipt) }, t('download'))));
-  scroll();
+  ussdLink();
 }
 
 async function menu() {
@@ -235,7 +249,7 @@ async function menu() {
   restart(flows[v]);
 }
 
-if (lang) setLang(lang);
+if (lang) setLang(lang); else { setSub(); $('#as-toggle').textContent = u('as_toggle'); $('#as-note').textContent = u('as_note'); $('#us-link').textContent = u('us_link'); }
 system('SYNTHETIC DEMO · nothing you type leaves this browser');
 const params = new URLSearchParams(location.search);
 restart(params.get('start') === 'withdraw' ? withdrawFlow : consentFlow);

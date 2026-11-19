@@ -4,7 +4,7 @@ import { cpSync, rmSync, mkdirSync, readFileSync, writeFileSync, readdirSync } f
 const CHROME = (active) => `<div class="synthetic-banner" role="note"><strong>SYNTHETIC DEMO</strong> · no real people or health data · independent prototype, not an SRHIN or Mozilla product</div>
 <header class="topnav"><div class="inner">
   <a class="brand" href="/"><span class="logo" aria-hidden="true">✓</span>Consent Commons</a>
-  <nav aria-label="Main">${[['home', '/', 'Overview'], ['chat', '/chat.html', 'Consent chat'], ['review', '/review.html', 'Access review'], ['ledger', '/ledger.html', 'Ledger'], ['gh', 'https://github.com/Quantumwoof/consent-commons', 'GitHub']]
+  <nav aria-label="Main">${[['home', '/', 'Overview'], ['chat', '/chat.html', 'Consent chat'], ['review', '/review.html', 'Access review'], ['ledger', '/ledger.html', 'Ledger'], ['ussd', '/ussd.html', 'USSD'], ['gh', 'https://github.com/Quantumwoof/consent-commons', 'GitHub']]
     .map(([k, href, label]) => `<a href="${href}"${k === active ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>
 </div></header>`;
 

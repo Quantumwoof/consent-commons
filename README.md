@@ -30,6 +30,8 @@ SRHIN already runs AI mental-health tools (its BraveHeart WhatsApp companion and
 | **2. Consent chat** ([web/chat.html](web/chat.html)) | A WhatsApp-style conversation in Pidgin, Yorùbá or English | Plain words, one choice at a time. Four comprehension questions *generated from the person's own choices*; nothing is recorded until they're answered correctly and the person says yes. "No" never affects their support. They get a signed receipt and a private withdrawal code. |
 | **3. Ledger** ([web/ledger.html](web/ledger.html), `commons verify`) | A public record and a tamper lab | Every consent, withdrawal, request, vote, decision, release, deletion notice and benefit report is one hash-chained entry. Anyone can verify the bytes **and replay every governance rule** from the start. |
 | **4. Access review** ([web/review.html](web/review.html)) | Researchers submit requests; a 5-seat community panel votes | Automatic checks drop everyone whose consent doesn't cover the request, and block it if fewer than 10 remain or it touches withdrawn consent. Approval needs 3 of 5 votes including 2 of 3 community seats. Each vote is bound to the request's SHA-256 digest, so changing the request voids the votes. Release re-checks at that moment and ships with a signed manifest of binding terms and benefit obligations. |
+| **5. Plain-words release summary** ([web/summary.html](web/summary.html)) | One release explained for a community meeting, in English, Pidgin or Yorùbá; printable | Who got the data, for what, the vote tally, the rules, benefits owed and withdrawal notices. A badge re-checks the manifest against the ledger (signature, chain, release and approval on the ledger, vote recount, rule replay) and shows a clear failure on a changed copy. |
+| **6. USSD simulation** ([web/ussd.html](web/ussd.html)) | A keypad-phone screen: dial `*347*22#` (example code), check consent or take your yes back with no data | **Simulation only, no phone network.** The session logic ([src/core/ussd.js](src/core/ussd.js)) uses the same lookup and the same `withdraw` as the chat, so the ledger events, deletion notices and audit are identical. Every screen is ≤ 160 characters (tested). |
 
 ## Try it
 
@@ -38,7 +40,7 @@ SRHIN already runs AI mental-health tools (its BraveHeart WhatsApp companion and
   ```bash
   git clone https://github.com/Quantumwoof/consent-commons && cd consent-commons
   npm start            # builds dist/ and serves http://localhost:5173
-  npm install && npm test   # 48 tests (Ajv is the only dev dependency, for schema tests)
+  npm install && npm test   # 57 tests (Ajv is the only dev dependency, for schema tests)
   ```
 - **Audit a ledger from the command line:**
   ```bash
@@ -55,7 +57,8 @@ SRHIN already runs AI mental-health tools (its BraveHeart WhatsApp companion and
 2. **Access review → Requests:** the seeded story shows every path. A public-health study **released**; a commercial chatbot company **blocked** automatically (0 people consented to that); an NGO request **amended** mid-review, so the earlier vote no longer counts; a follow-up **blocked** because it names someone who withdrew; and a state agency request that passed every automatic check but was **rejected by the community seats** because "enforcement teams" were not what people agreed to.
 3. **New request:** type a request and watch the live preview tell you how many people's consent covers it, and why the others are excluded.
 4. **Back in the chat:** type `WITHDRAW` and your code. If you were in a release, the recipient gets a deletion notice (see *Releases & benefits*).
-5. **Ledger → Tamper lab:** edit a consent, delete a withdrawal, or rewrite history and re-hash everything, then see which defence catches each one.
+5. **No data? USSD:** open *USSD*, dial `*347*22#`, press 2 and use the sample code (a synthetic person in the released study). Then open the release's **plain-words summary**: a new withdrawal notice appears and the badge is still green. Press "Try a changed copy" to see it fail.
+6. **Ledger → Tamper lab:** edit a consent, delete a withdrawal, or rewrite history and re-hash everything, then see which defence catches each one.
 
 ## How it works
 
@@ -118,7 +121,8 @@ Honest list. Most are the reason the 12-month fellowship exists.
 - **One ledger in one place.** A real commons needs replicated copies held by independent parties and a regularly published head hash.
 - **Fixed rules.** The governance rules (panel seats, quorum, k-minimum) are set in the ledger's first entry and can't yet be changed. Changing them should itself be a community vote recorded in the ledger. That's planned, not built.
 - **Lost codes.** If a person loses their withdrawal code, they need a human-verified recovery path (for example, through a known community health worker). That's not built.
-- **Literacy and access.** Text chat excludes people who can't read comfortably. Voice consent and facilitator-led consent are needed.
+- **Literacy and access.** Text chat excludes people who can't read comfortably. Voice consent is needed. The chat's "assisted by a health worker" option is only a **label** (`collected_via: assisted_offline_demo`); offline storage on a worker's device and later sync are not built.
+- **USSD is simulated.** No telecom short code, no network, no SMS. Real withdrawal codes contain letters, which are slow to type on a keypad; a real rollout needs a digits-only code and a lookup that resists guessing. Yorùbá tone marks would need UCS-2 on real networks, which shortens the screen budget.
 - **Not legal advice.** Built with ideas like explicit consent, purpose limitation and withdrawal in mind, but not reviewed against Nigeria's Data Protection Act 2023 or any ethics framework by a lawyer or an ethics committee.
 - **Not a dataset tool.** The released "dataset" is synthetic. Real de-identification of free text and audio is a hard, separate problem.
 
@@ -136,10 +140,10 @@ A starting point only. In the Embedded track, the project is co-defined with the
 ```
 src/core/       consent terms, policy checks, ledger, rulebook + engine, signatures, synthetic data
 src/i18n/       en, pcm (Pidgin), yo (Yorùbá) strings; notice fingerprints; comprehension questions
-web/            static demo: chat, review dashboard, ledger explorer (no framework, no build step beyond copying)
+web/            static demo: chat, review dashboard, release summary, USSD simulation, ledger explorer (no framework, no build step beyond copying)
 schema/         JSON Schemas (generated from src/core/vocab.js; tests fail if they drift)
 bin/commons.js  CLI: seed, verify, verify-receipt, check, tamper-demo, validate
-tests/          48 tests (node:test)
+tests/          57 tests (node:test)
 docs/           EXPLAINER, SCHEMA, THREAT_MODEL, TRANSLATION_REVIEW, USER_TESTING_KIT (draft)
 ```
 

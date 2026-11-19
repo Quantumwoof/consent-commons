@@ -35,3 +35,7 @@ These carry the legal and ethical weight. Review them first:
 ## Hausa
 
 Not yet included. Adding it means a new `src/i18n/ha.js` with every key (the tests check that all keys and placeholders match), plus `ha` in `LANGUAGES` in `src/core/vocab.js` and a regenerated schema.
+
+## UI strings outside the consent wording (`u` in each locale)
+
+The release summary, the USSD simulation and the "assisted" label use a second set of strings, `u`, in each locale file. They are **not** part of the consent notice digest (they are not what a person agrees to), but they are drafts like everything else here and need the same native-speaker review. USSD screens (`ux_*`) must stay at or under 160 characters; the tests check this in every language.

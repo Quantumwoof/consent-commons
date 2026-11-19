@@ -17,6 +17,7 @@
         <a class="btn btn-primary" href="/chat.html">Try the consent chat</a>
         <a class="btn" href="/review.html">Open the review panel</a>
         <a class="btn" href="/ledger.html">Audit the ledger</a>
+        <a class="btn" href="/ussd.html">No data? Try USSD (simulation)</a>
       </div>
     </div>
     <div class="card">
@@ -33,13 +34,15 @@
     <div><b>3 · Request</b>A researcher asks for data. Automatic checks drop everyone whose terms don't cover it, and block the request if too few remain.</div>
     <div><b>4 · Review</b>A panel of youth, lived-experience and health-worker reps votes. Each vote is bound to the exact request. Community seats can block.</div>
     <div><b>5 · Release</b>Data goes out with a signed manifest: the binding terms, benefit obligations, and which consent each record came from.</div>
-    <div><b>6 · Withdraw</b>One message stops all future use, and recipients are told to delete the person's record.</div>
+    <div><b>6 · Withdraw</b>One message stops all future use, and recipients are told to delete the person's record. Works from the chat or a basic phone over USSD (simulated here).</div>
   </div>
 
   <div class="feature-grid">
     <a class="card feature" href="/chat.html"><div class="num">CONSENT FLOW</div><h3>Consent chat</h3><p class="small muted">WhatsApp-style. English, Nigerian Pidgin and Yorùbá (draft translations, flagged for native-speaker review). Comprehension check, receipt, check and withdraw.</p></a>
     <a class="card feature" href="/review.html"><div class="num">ACCESS REVIEW</div><h3>Community panel</h3><p class="small muted">Researchers submit requests and see a live preview of what consent allows. 5 seats, quorum with a community majority, reasoned votes, digest-bound approvals, benefit tracking.</p></a>
     <a class="card feature" href="/ledger.html"><div class="num">LEDGER</div><h3>Tamper-evident record</h3><p class="small muted">Every event is hash-chained. Verify it, replay every governance rule, and try the tamper lab: edit, delete, or rewrite history and watch what catches it.</p></a>
+    <a class="card feature" href="/ussd.html"><div class="num">LOW CONNECTIVITY</div><h3>USSD on any phone</h3><p class="small muted">A clickable simulation of <span class="mono">*347*22#</span> (example code): check your consent or take your yes back with a basic phone and no data. Same ledger, same rules as the chat. The chat also has an "assisted by a health worker" label.</p></a>
+    <a class="card feature" href="/summary.html"><div class="num">COMMUNITY MEETINGS</div><h3>Plain-words release summary</h3><p class="small muted">Who got the data, for what, the vote, the rules and what is owed back, in English, Pidgin and Yorùbá, with a check against the ledger. Printable.</p></a>
     <a class="card feature" href="https://github.com/Quantumwoof/consent-commons/blob/main/docs/SCHEMA.md"><div class="num">CONSENT SCHEMA</div><h3>Terms that travel</h3><p class="small muted">Versioned JSON Schemas for consent terms, access requests, release manifests, receipts and ledger entries. <span class="mono">/schema/consent-terms.v1.json</span></p></a>
   </div>
 

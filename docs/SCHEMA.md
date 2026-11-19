@@ -86,6 +86,16 @@ Receipts and manifests carry `signature = { alg: "Ed25519", key_id, public_key (
 | `deidentified` | Record-level, with names, numbers and addresses removed |
 | `aggregated_only` | Only totals and averages, never individual records |
 
+### Collection channel (`collected_via`, informational)
+
+Records how the consent was collected. It changes no rule, and the schema keeps it an open string so new channels can be added without a breaking change.
+
+| Code | Meaning |
+|---|---|
+| `web_chat_demo` | The person used the consent chat themselves (web demo) |
+| `assisted_offline_demo` | A community health worker took the person through the chat on a shared device (demo label: offline storage and later sync are not built) |
+| `synthetic_seed` | Generated synthetic example person |
+
 ## How a recipient uses a release manifest
 
 1. Verify `signature` against the commons key published in the ledger's GENESIS entry.
@@ -93,6 +103,8 @@ Receipts and manifests carry `signature = { alg: "Ed25519", key_id, public_key (
 3. Treat `terms` as binding: use only for `terms.purpose`, only the listed `data_categories`, never share onward, never attempt re-identification, and delete everything at `access_ends_at`.
 4. Deliver every item in `obligations` by its `due` date. Delivery is recorded in the ledger as `BENEFIT_DELIVERED` with evidence.
 5. On a withdrawal notice naming a `record_id`, delete that record within the stated number of days and confirm.
+
+Anyone holding the manifest and a copy of the ledger can run `verifyManifest(manifest, entries)` from [`src/core/commons.js`](../src/core/commons.js): signature against the GENESIS key, hash chain, the identical manifest on the ledger, the named approval for the same request digest, a recount of the named votes, and a full rule replay. The plain-words summary page shows this result.
 
 ## Versioning
 

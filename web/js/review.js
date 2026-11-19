@@ -6,7 +6,7 @@ import { consentStatus } from '/src/core/terms.js';
 import { PURPOSES, DATA_CATEGORIES, PERMITTED_USERS, BENEFITS, DEIDENTIFICATION, LANGUAGES } from '/src/core/vocab.js';
 import { syntheticDataset } from '/src/core/synthetic-records.js';
 
-let commons, S, selected = null, tab = 'requests';
+let commons, S, selected = null, tab = ['requests', 'new', 'releases', 'pool', 'rules'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'requests';
 const ORDER = { in_review: 0, approved: 1, blocked: 2, released: 3, rejected: 4 };
 
 async function refresh() { S = await commons.state(); render(); }
@@ -204,6 +204,7 @@ function renderReleases() {
         el('tbody', {}, rel.notices.map((n) => el('tr', {}, el('td', { class: 'mono' }, n.record_id), el('td', {}, fmtTime(n.ts)), el('td', {}, fmtDate(n.delete_by))))))
         : el('p', { class: 'small muted' }, 'Nobody in this release has withdrawn yet. Withdraw in the chat to see a notice appear here.'),
       el('div', { class: 'row', style: 'margin-top:.8rem' },
+        el('a', { class: 'btn btn-sm btn-primary', href: `/summary.html?release=${encodeURIComponent(m.release_id)}` }, 'View plain-words summary'),
         el('button', { class: 'btn btn-sm', type: 'button', onclick: () => download(`${m.release_id}-manifest.json`, m) }, 'Download manifest'),
         el('button', { class: 'btn btn-sm', type: 'button', onclick: async () => download(`${m.release_id}-SYNTHETIC-dataset.json`, await datasetFor(rel)) }, 'Download synthetic dataset')));
   }) : [el('div', { class: 'card' }, 'No releases yet.')];

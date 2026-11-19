@@ -13,6 +13,12 @@ export function t(lang, key, vars = {}) {
   return s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
 }
 
+/** UI text outside the consent conversation (release summary, USSD simulation). Not part of the notice digest. */
+export function tu(lang, key, vars = {}) {
+  const s = LOCALES[lang]?.u?.[key] ?? LOCALES.en.u[key] ?? key;
+  return s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? `{${k}}`));
+}
+
 /**
  * Fingerprint of the exact wording shown. Stored in every consent record, so it is always possible to
  * prove WHICH text a person agreed to, and to find everyone who saw a version later found to be unclear.

@@ -12,7 +12,7 @@ function summary(e) {
   const d = e.data;
   switch (e.type) {
     case 'GENESIS': return `${d.commons.name}: rules set (k ≥ ${d.policy.k_minimum}, quorum ${d.policy.approvals_required}/${d.policy.panel.length})${d.signing_key ? `, signing key ${d.signing_key.key_id}` : ''}`;
-    case 'CONSENT_GRANTED': return `${d.terms.subject_ref} consented in ${d.terms.language} (${d.terms.purposes.allowed.length} purposes, ${d.terms.data_categories.length} data types, until ${d.terms.expires_at.slice(0, 10)})`;
+    case 'CONSENT_GRANTED': return `${d.terms.subject_ref} consented in ${d.terms.language}${d.terms.collected_via === 'assisted_offline_demo' ? ', assisted by a health worker (demo label)' : ''} (${d.terms.purposes.allowed.length} purposes, ${d.terms.data_categories.length} data types, until ${d.terms.expires_at.slice(0, 10)})`;
     case 'CONSENT_WITHDRAWN': return `${d.subject_ref} withdrew consent ${d.terms_id}`;
     case 'ACCESS_REQUESTED': return `${d.request.request_id} v${d.request.version} from ${d.request.requester.organisation}: ${d.checks.passed ? `passed checks (${d.checks.eligible_count} people)` : 'BLOCKED: ' + d.checks.blocks.map((b) => b.code).join(', ')}`;
     case 'REVIEW_VOTE': return `${d.reviewer_id} ${d.vote}s ${d.request_id} (digest ${short(d.request_digest, 8)})`;

@@ -383,3 +383,40 @@ export async function verifyReceipt(receipt, entries) {
   }
   return { ok: checks.every((c) => c.ok), checks, status };
 }
+
+/**
+ * Check a release manifest (for example the copy behind a plain-words summary) against a copy of the ledger.
+ * Every check is something code can actually prove; it says nothing about whether the recipient obeys the
+ * terms in real life. Each check is { id, status: 'pass' | 'fail' | 'skip', detail }.
+ */
+export async function verifyManifest(manifest, entries) {
+  const checks = [];
+  const add = (id, status, detail) => checks.push({ id, status, detail });
+  const m = manifest ?? {};
+  const key = entries[0]?.data?.signing_key ?? null;
+  const policy = entries[0]?.data?.policy ?? DEFAULT_POLICY;
+  if (key) {
+    const { signature, ...body } = m;
+    const v = await verifySignature(body, signature, { trustedKeyId: key.key_id });
+    add('signature', v.ok ? 'pass' : 'fail', v.ok ? `Signed by this commons (key ${v.keyId}).` : v.reason);
+  } else add('signature', m.signature ? 'fail' : 'skip', m.signature ? 'This commons declares no signing key, so the signature cannot be trusted.' : 'This commons has no signing key (the browser could not sign), so there is no signature to check.');
+  const chain = await verifyChain(entries);
+  add('chain', chain.ok ? 'pass' : 'fail', chain.ok ? `All ${chain.entries} entries link correctly.` : `Broken at entry #${chain.brokenAt}: ${chain.reason}`);
+  const rel = entries.find((e) => e?.type === 'DATA_RELEASED' && e.data?.manifest?.release_id === m.release_id);
+  const same = rel && (await digestOf(rel.data.manifest)) === (await digestOf(m));
+  add('in_ledger', same ? 'pass' : 'fail', !rel ? 'No release with this ID is on the ledger.' : same ? `Identical to ledger entry #${rel.seq}.` : 'The ledger records a different manifest for this release: this copy was changed.');
+  const dec = entries.find((e) => e?.hash === m.approval?.decision_entry);
+  const decOk = dec?.type === 'ACCESS_DECIDED' && dec.data.outcome === 'approved' && dec.data.request_id === m.request?.request_id
+    && dec.data.request_digest === m.request?.request_digest && (await digestOf(dec.data.tally)) === (await digestOf(m.approval?.tally ?? null));
+  add('approval', decOk ? 'pass' : 'fail', decOk ? `Approved at ledger entry #${dec.seq}, for exactly this version of the request.` : 'The approval named in the manifest is missing from the ledger or does not match it.');
+  const hashes = m.approval?.vote_entries ?? [];
+  const votes = hashes.map((h) => entries.find((e) => e?.hash === h && e.type === 'REVIEW_VOTE')).filter(Boolean);
+  const bound = votes.length === hashes.length && votes.every((e) => e.data.request_id === m.request?.request_id && e.data.request_digest === m.request?.request_digest);
+  const t = tally(votes.map((e) => e.data), m.request?.request_digest, policy);
+  const mt = m.approval?.tally ?? {};
+  const countOk = bound && t.outcome === 'approved' && ['approvals', 'rejections', 'community_approvals', 'community_seats', 'seats'].every((k) => t[k] === mt[k]);
+  add('votes', countOk ? 'pass' : 'fail', countOk ? `${t.approvals} of ${t.seats} approvals, ${t.community_approvals} from community seats, recounted from the ledger.` : 'Recounting the votes on the ledger does not give the tally in the manifest.');
+  const s = await replay(entries);
+  add('rules', s.violations.length ? 'fail' : 'pass', s.violations.length ? `${s.violations.length} rule violation(s), first at entry #${s.violations[0].seq}: ${s.violations[0].message}` : 'Every governance rule holds when the whole ledger is replayed.');
+  return { ok: checks.every((c) => c.status !== 'fail'), complete: checks.every((c) => c.status === 'pass'), checks };
+}

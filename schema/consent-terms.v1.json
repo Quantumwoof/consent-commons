@@ -259,7 +259,8 @@
       }
     },
     "collected_via": {
-      "type": "string"
+      "type": "string",
+      "description": "How the consent was collected. Informational only; changes no rule. Known values: web_chat_demo: The person used the consent chat themselves (web demo) | assisted_offline_demo: A community health worker took the person through the chat on a shared device (demo label: offline storage and later sync are not built) | synthetic_seed: Generated synthetic example person"
     },
     "synthetic": {
       "type": "boolean",

@@ -146,13 +146,19 @@ The Tamper lab on the Ledger page shows all three attacks (edit, delete, rewrite
 - *"Can't a researcher just lie in the description?"* "Yes, and no software fixes that. The panel reads the description, the manifest makes the agreed terms provable, and benefit delivery is tracked in public. Misuse becomes visible and attributable, which is what contracts and enforcement need."
 - *"Isn't excluding people bias?"* "The screen shows how many people are left out and why, and warns when a request covers under half of active consents, so researchers know their sample may not represent the community. Respecting a 'no' is the point."
 
+### Plain-words summary and USSD (low connectivity)
+
+- **Plain-words summary** (Releases & benefits → *View plain-words summary*): the release manifest in plain words for a community meeting, in English, Pidgin or Yorùbá, printable. The green badge means code checked six things: the signature is from the commons key, the ledger chain is unbroken, this exact manifest is on the ledger, the approval it names is on the ledger for the same request version, recounting the votes gives the same tally, and every rule still holds on replay. "Try a changed copy" edits one number in a copy and the badge turns red. Say: *"It proves the record is genuine. It can't prove the lab obeys the rules in real life; that's what benefit tracking and the panel are for."*
+- **USSD simulation** (`/ussd.html`): a keypad-phone screen. Dial `*347*22#` (an example, not a real code), press 1 to check or 2 to take your yes back, enter a withdrawal code. It calls the same `withdraw` as the chat, so the ledger and the deletion notices are identical. Say: *"This is a simulation of how someone with no data would withdraw. A real USSD needs a telecom partner and digits-only codes."*
+- **Assisted label** (chat, under the phone): tick it when a community health worker is helping. The consent records `collected_via: assisted_offline_demo`. Say: *"It's a label in the demo. Saving offline on the worker's device and syncing later is planned, not built."*
+
 ---
 
 ## 5. How to talk about what's real
 
 Say:
 - "Working prototype, open source, on synthetic data."
-- "48 automated tests, including tamper-detection tests."
+- "57 automated tests, including tamper-detection tests."
 - "Translations are drafts awaiting native-speaker review."
 - "Designed for SRHIN's published brief; not an SRHIN tool."
 
@@ -192,12 +198,13 @@ Don't say:
 | `src/core/vocab.js` | the codes: purposes, data types, users, benefits |
 | `src/core/terms.js` | build and check consent terms; `conflicts()` compares terms with a request |
 | `src/core/policy.js` | governance rules, automatic checks, quorum `tally()` |
-| `src/core/commons.js` | the rulebook (`applyEntry`), replay, audit, the `Commons` engine, `verifyReceipt` |
+| `src/core/commons.js` | the rulebook (`applyEntry`), replay, audit, the `Commons` engine, `verifyReceipt`, `verifyManifest` |
 | `src/core/signer.js` | Ed25519 signatures |
 | `src/core/synthetic-records.js`, `seed.js` | fake data and the demo story |
 | `src/i18n/*` | the three languages, notice fingerprints, comprehension questions |
-| `web/*` | the three pages; `store.js` keeps the demo in your browser |
+| `src/core/ussd.js` | the USSD session: menus, ≤ 160-character screens, check and withdraw through the same engine as the chat |
+| `web/*` | the pages (chat, review, summary, USSD, ledger); `store.js` keeps the demo in your browser |
 | `bin/commons.js` | the command-line auditor |
-| `tests/*` | 48 tests; read `tests/commons.test.js` for the rules in action |
+| `tests/*` | 57 tests; read `tests/commons.test.js` for the rules in action |
 
 **Practise:** run `npm test`, then `node bin/commons.js tamper-demo examples/demo-ledger.jsonl`, and explain out loud what each line of output means. If you can do that, you can defend this project.

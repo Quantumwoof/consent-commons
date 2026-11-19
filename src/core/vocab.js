@@ -52,4 +52,12 @@ export const LANGUAGES = { en: 'English', pcm: 'Nigerian Pidgin', yo: 'Yorùbá'
 export const TRANSLATION_STATUS = ['draft_unreviewed', 'community_reviewed', 'professionally_verified'];
 export const DURATIONS_DAYS = { 365: '1 year', 730: '2 years', 1825: '5 years' };
 
+/** How a consent was collected (`collected_via`). Informational: it changes no rule. Kept as an open string in the
+ *  schema so new channels can be added without a breaking change. */
+export const COLLECTION_CHANNELS = {
+  web_chat_demo: 'The person used the consent chat themselves (web demo)',
+  assisted_offline_demo: 'A community health worker took the person through the chat on a shared device (demo label: offline storage and later sync are not built)',
+  synthetic_seed: 'Generated synthetic example person',
+};
+
 export const WITHDRAWAL_EFFECT = 'stop_future_use_and_delete_record_level_copies';
