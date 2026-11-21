@@ -3,3 +3,10 @@ dist/
 .vercel/
 *.log
 .DS_Store
+
+# secrets: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
