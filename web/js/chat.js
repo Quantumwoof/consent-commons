@@ -111,7 +111,7 @@ const yesNo = () => [{ value: 'yes', label: t('yes') }, { value: 'no', label: t(
 
 function setSub() { $('#h-sub').textContent = assisted() ? `${t('subtitle')} · ${u('as_badge')}` : t('subtitle'); }
 assistedBox.addEventListener('change', () => { sessionStorage.setItem('cc.assisted', assisted() ? '1' : '0'); setSub(); system(assisted() ? u('as_badge') : t('subtitle')); });
-function ussdLink() { log.append(el('a', { class: 'msg system ussd-link', href: '/ussd.html' }, u('us_link'))); scroll(); }
+function ussdLink() { log.append(el('a', { class: 'msg system ussd-link', href: '/ussd.html?from=chat' }, u('us_link'))); scroll(); }
 
 function setLang(l) {
   lang = l; setSiteLang(l); langSel.value = l;
@@ -203,11 +203,11 @@ async function consentFlow() {
     el('div', { class: 'code-box', 'aria-label': t('code_label') }, code),
     el('div', { class: 'small' }, '⚠️ ' + t('code_warning')),
     terms.collected_via === 'assisted_offline_demo' ? el('div', { class: 'small', style: 'margin-top:.35rem' }, el('span', { class: 'pill pill-info' }, u('as_receipt'))) : null,
-    el('div', { class: 'small', style: 'margin-top:.35rem' }, el('a', { href: '/ussd.html' }, u('us_link'))),
+    el('div', { class: 'small', style: 'margin-top:.35rem' }, el('a', { href: '/ussd.html?from=chat' }, u('us_link'))),
     el('div', { class: 'small muted', style: 'margin-top:.35rem' }, `${u('chat_entry', { seq: receipt.ledger_entry.seq })} · ${receipt.ledger_entry.hash.slice(0, 16)}… ${receipt.signature ? `· ${u('chat_signed')}` : ''}`),
     el('div', { class: 'row', style: 'margin-top:.5rem' },
       el('button', { class: 'btn btn-primary btn-sm', type: 'button', onclick: () => download(`consent-receipt-${terms.terms_id}.json`, kept) }, t('download')),
-      el('a', { class: 'btn btn-sm', href: '/ledger.html#verify-receipt' }, t('verify')))));
+      el('a', { class: 'btn btn-sm', href: '/ledger.html?from=chat#verify-receipt' }, t('verify')))));
   scroll();
 }
 

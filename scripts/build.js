@@ -15,7 +15,8 @@ const CHROME = (page) => {
   ${p.noLang ? '' : LANG_SELECT}
 </div>${p.role ? roleBar(p.role) : ''}</header>
 ${p.role ? tabBar(p.role, p.tab) : ''}
-<script type="module" src="/js/lang.js"></script>`;
+<script type="module" src="/js/lang.js"></script>
+<script type="module" src="/js/shell.js"></script>`;
 };
 
 rmSync('dist', { recursive: true, force: true });

@@ -69,7 +69,7 @@ test('every key used by the page HTML and page scripts exists in every language'
   for (const m of src('../scripts/build.js').matchAll(/data-i18n(?:-html|-attr)?="(?:aria-label:)?(\w+)"/g)) used.add(m[1]);
   ['home', 'chat', 'review', 'ledger', 'ussd'].forEach((k) => used.add('nav_' + k));
   const js = new URL('../web/js/', import.meta.url);
-  for (const f of ['review.js', 'ledger.js', 'chat.js', 'summary.js', 'explain.js', 'hub.js']) for (const m of readFileSync(new URL(f, js), 'utf8').matchAll(/\b(?:T|u|tu\([^,]+,)\s*\(?\s*'([a-z][a-z0-9_]*)'/g)) used.add(m[1]);
+  for (const f of ['review.js', 'ledger.js', 'chat.js', 'summary.js', 'explain.js', 'hub.js', 'shell.js']) for (const m of readFileSync(new URL(f, js), 'utf8').matchAll(/\b(?:T|u|tu\([^,]+,)\s*\(?\s*'([a-z][a-z0-9_]*)'/g)) used.add(m[1]);
   for (const k of [...used]) if (!k || k.endsWith('_')) used.delete(k); // prefixes like 'seat_' + code are covered above
   assert.ok(used.size > 150, `found ${used.size} keys`);
   for (const k of used) assert.ok(has(k) || ['lang', 'title'].includes(k), `missing UI key ${k}`);

@@ -61,8 +61,8 @@ function afterWithdraw({ entry, notices }) {
   box.replaceChildren(
     el('div', { class: 'callout callout-good small' }, `✓ CONSENT_WITHDRAWN · #${entry.seq}${notices.length ? ` · WITHDRAWAL_NOTICE_ISSUED × ${notices.length}` : ''}`),
     el('div', { class: 'row', style: 'margin-top:.6rem' },
-      el('a', { class: 'btn btn-sm', href: '/ledger.html' }, u('us_open_ledger')),
-      notices.length ? el('a', { class: 'btn btn-sm', href: `/summary.html?release=${encodeURIComponent(notices[0].data.release_id)}` }, u('us_open_releases')) : null));
+      el('a', { class: 'btn btn-sm', href: '/ledger.html?from=ussd' }, u('us_open_ledger')),
+      notices.length ? el('a', { class: 'btn btn-sm', href: `/summary.html?release=${encodeURIComponent(notices[0].data.release_id)}&from=ussd` }, u('us_open_releases')) : null));
 }
 
 const KEYS = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'], ['6', 'MNO'], ['7', 'PQRS'], ['8', 'TUV'], ['9', 'WXYZ'], ['*', ''], ['0', ''], ['#', '']];

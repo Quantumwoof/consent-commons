@@ -83,7 +83,7 @@ function researcher() {
   const others = [...S.requests.values()].filter((x) => x !== r).sort((a, b) => b.updated_seq - a.updated_seq);
   $('#other-requests').hidden = !others.length;
   $('#other-requests').replaceChildren(el('h2', { style: 'font-size:1rem;margin:0 0 .3rem' }, T('hub_res_others')),
-    ...others.map((x) => el('a', { class: 'req-row', href: `/researcher.html?req=${encodeURIComponent(x.request.request_id)}`, style: 'color:inherit;text-decoration:none' },
+    ...others.map((x) => el('a', { class: 'req-row', href: `/researcher.html?req=${encodeURIComponent(x.request.request_id)}&from=researcher`, style: 'color:inherit;text-decoration:none' },
       el('span', { class: 'org' }, x.request.requester.organisation), statusTag(x.status), el('span', { class: 'muted', 'aria-hidden': 'true' }, '›'))));
 }
 

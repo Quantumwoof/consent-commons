@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { LOCALES } from '../src/i18n/index.js';
-import { ROLES, PAGES, roleBar, tabBar } from '../web/js/roles.js';
+import { ROLES, PAGES, FROM, roleBar, tabBar, backFor } from '../web/js/roles.js';
 
 const root = new URL('../', import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), 'utf8');
@@ -73,4 +73,61 @@ test('English uses one name per role: no leftover "community panel", "Access rev
   for (const [k, v] of Object.entries(all)) assert.doesNotMatch(v, /community panel|access review|\brequester\b/i, `${k}: ${v}`);
   // Pidgin and Yoruba use the same panel name as the role strip wherever the panel is named on its own.
   for (const k of ['rv_title', 'home_c2_h']) for (const l of ['pcm', 'yo']) assert.equal(LOCALES[l].u[k], LOCALES[l].u.role_panel, `${l}.${k}`);
+});
+
+test('back goes one logical step: hubs to start, role pages to their hub, ?from= to where you came from', () => {
+  const href = (page, from) => backFor(page, from)?.href ?? null;
+  assert.equal(href('home'), null);
+  for (const hub of ['community', 'researcher', 'panel', 'about']) assert.equal(href(hub), '/');
+  for (const pg of ['chat', 'ussd', 'summary']) assert.equal(href(pg), '/community.html');
+  assert.equal(href('review'), '/panel.html');
+  assert.equal(href('ledger'), '/');
+  // Joshua's two cases: Community member > Check my receipt, Review panel > Audit the ledger
+  assert.equal(href('ledger', 'community'), '/community.html');
+  assert.equal(href('ledger', 'panel'), '/panel.html');
+  assert.equal(href('ledger', 'chat'), '/chat.html');
+  assert.equal(href('ledger', 'ussd'), '/ussd.html');
+  assert.equal(href('ussd', 'chat'), '/chat.html');
+  assert.equal(href('summary', 'releases'), '/review.html#releases');
+  assert.equal(href('summary', 'ussd'), '/ussd.html');
+  assert.equal(href('researcher', 'researcher'), '/researcher.html');
+  for (const pg of ['chat', 'ledger', 'ussd', 'summary']) assert.equal(href(pg, 'about'), '/about.html');
+  // unknown or not-allowed ?from= values fall back; nothing can point the button elsewhere
+  assert.equal(href('ledger', 'https://evil.example'), '/');
+  assert.equal(href('chat', 'panel'), '/community.html');
+  for (const f of Object.values(FROM)) assert.match(f.href, /^\/[\w./#-]*$/);
+});
+
+test('role context: ledger stays "Anyone can audit" with the tab bar of where you came from; summary takes the opener role', () => {
+  assert.deepEqual([backFor('ledger', 'panel').role, backFor('ledger', 'panel').tabRole], ['audit', 'panel']);
+  assert.deepEqual([backFor('ledger', 'community').role, backFor('ledger', 'community').tabRole], ['audit', 'community']);
+  assert.equal(backFor('ledger').tabRole, 'audit');
+  assert.deepEqual([backFor('summary', 'releases').role, backFor('summary', 'releases').tab], ['panel', 'releases']);
+  assert.equal(backFor('summary').role, 'community');
+});
+
+test('every link into a shared page carries ?from= so back returns there', () => {
+  const read2 = (p) => readFileSync(new URL(p, root), 'utf8');
+  assert.match(read2('web/community.html'), /href="\/ledger\.html\?from=community#verify-receipt"/);
+  assert.match(read2('web/panel.html'), /href="\/ledger\.html\?from=panel"/);
+  assert.match(read2('web/js/chat.js'), /\/ledger\.html\?from=chat#verify-receipt/);
+  assert.doesNotMatch(read2('web/js/chat.js'), /'\/ussd\.html'/);
+  assert.match(read2('web/js/ussd.js'), /\/ledger\.html\?from=ussd/);
+  assert.match(read2('web/js/ussd.js'), /&from=ussd/);
+  assert.match(read2('web/js/review.js'), /summary\.html\?release=.*&from=releases/);
+  for (const pg of ['chat', 'ledger', 'ussd', 'summary']) assert.match(read2('web/about.html'), new RegExp(`href="/${pg}\\.html\\?from=about"`));
+  // every value used in a link is one backFor honours for that page
+  for (const f of ['web/community.html', 'web/panel.html', 'web/about.html', 'web/chat.html', 'web/js/chat.js', 'web/js/ussd.js', 'web/js/review.js', 'web/js/hub.js']) {
+    for (const m of read2(f).matchAll(/\/(\w+)\.html\?(?:[^"'`]*?&)?from=(\w+)/g)) assert.ok(PAGES[m[1]]?.from?.includes(m[2]), `${f}: ${m[1]} from=${m[2]}`);
+  }
+});
+
+test('tamper lab says it is a simulation and names the check that caught it, in every language', () => {
+  for (const l of LANGS) {
+    const u = LOCALES[l].u;
+    for (const k of ['lg_t_verdict_caught', 'lg_t_verdict_missed', 'lg_t_result_h', 'app_back_to', 'app_start']) assert.ok(u[k], `${l}.${k}`);
+    for (const k of ['lg_t_edit_btn', 'lg_t_del_btn', 'lg_t_rw_btn']) assert.match(u[k], /^(Simulate|Make-believe|Àfarawé):/, `${l}.${k}`);
+  }
+  assert.match(LOCALES.en.u.lg_tamper_p, /dishonest operator/);
+  assert.match(LOCALES.en.u.lg_tamper_p, /never touched/);
 });

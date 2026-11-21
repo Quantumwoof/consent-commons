@@ -78,7 +78,11 @@ function renderTamper() {
     const r = await audit(copy);
     const receipt = await commons.reissueReceipt(firstConsent());
     const rc = await verifyReceipt(receipt, copy);
-    out.replaceChildren(el('div', { class: 'callout callout-info' }, el('b', {}, label), el('div', {}, note)),
+    // Display only: the same three defences as before, with a plain verdict on top.
+    const caught = !chain.ok || r.violations.length > 0 || !rc.ok;
+    out.replaceChildren(el('div', { class: 'callout callout-warn' }, el('b', {}, label), el('div', {}, note)),
+      el('div', { class: `callout ${caught ? 'callout-good' : 'callout-bad'}`, style: 'margin-top:.5rem' }, el('b', {}, caught ? T('lg_t_verdict_caught') : T('lg_t_verdict_missed'))),
+      el('div', { class: 'section-title' }, T('lg_t_result_h')),
       el('ul', {},
         el('li', {}, chain.ok ? el('span', { class: 'check-bad' }, T('lg_t_chain_miss')) : el('span', { class: 'check-ok' }, T('lg_t_chain_hit', { seq: chain.brokenAt, why: chainWhy(chain) }))),
         el('li', {}, r.violations.length ? el('span', { class: 'check-ok' }, T('lg_t_rules_hit', { n: r.violations.length, why: violation(r.violations[0]) })) : el('span', { class: 'check-bad' }, T('lg_t_rules_miss'))),
@@ -86,8 +90,8 @@ function renderTamper() {
       el('p', { class: 'muted' }, T('lg_t_copy')));
   };
   $('#tamper-card').replaceChildren(el('h2', {}, T('lg_tamper_h')),
-    el('p', { class: 'small muted' }, T('lg_tamper_p')),
-    el('div', { class: 'row' },
+    el('p', { class: 'callout callout-info small' }, T('lg_tamper_p')),
+    el('div', { class: 'tamper-btns' },
       el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_edit_label'), (c) => { const i = firstConsent(); c[i].data.terms.purposes.allowed.push('ai_training_commercial'); return T('lg_t_edit_note', { i }); }) }, T('lg_t_edit_btn')),
       el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_del_label'), (c) => { const i = c.findIndex((e) => e.type === 'CONSENT_WITHDRAWN'); c.splice(i, 1); return T('lg_t_del_note', { i }); }) }, T('lg_t_del_btn')),
       el('button', { class: 'btn btn-sm', type: 'button', onclick: () => run(T('lg_t_rw_label'), async (c) => {

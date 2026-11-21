@@ -276,3 +276,5 @@ body.page-review, body.page-ledger { --app-w: 1080px; }
 /* QA fixes */
 html { scroll-padding-top: 120px; } /* anchored targets (#verify-receipt, request details) never hide under the sticky header */
 .dot { background: #5f6e66; }
+.tamper-btns { display: grid; gap: .45rem; justify-items: start; margin: .2rem 0 .6rem; }
+.tamper-btns .btn { text-align: left; }

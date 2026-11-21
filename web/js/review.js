@@ -245,7 +245,7 @@ function renderReleases() {
         el('tbody', {}, rel.notices.map((n) => el('tr', {}, el('td', { class: 'mono' }, n.record_id), el('td', {}, fmtTime(n.ts)), el('td', {}, fmtDate(n.delete_by))))))
         : el('p', { class: 'small muted' }, T('rv_no_notices')),
       el('div', { class: 'row', style: 'margin-top:.8rem' },
-        el('a', { class: 'btn btn-sm btn-primary', href: `/summary.html?release=${encodeURIComponent(m.release_id)}` }, T('rv_view_summary')),
+        el('a', { class: 'btn btn-sm btn-primary', href: `/summary.html?release=${encodeURIComponent(m.release_id)}&from=releases` }, T('rv_view_summary')),
         el('button', { class: 'btn btn-sm', type: 'button', onclick: () => download(`${m.release_id}-manifest.json`, m) }, T('rv_dl_manifest')),
         el('button', { class: 'btn btn-sm', type: 'button', onclick: async () => download(`${m.release_id}-SYNTHETIC-dataset.json`, await datasetFor(rel)) }, T('rv_dl_dataset'))));
   }) : [el('div', { class: 'card' }, T('rv_no_releases'))];
