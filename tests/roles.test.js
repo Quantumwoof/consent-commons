@@ -67,3 +67,10 @@ test('the build writes the shell into every page with the role strip in English 
   assert.doesNotMatch(read('dist/index.html'), /class="rolebar/);
   assert.ok(existsSync(new URL('dist/js/roles.js', root)));
 });
+
+test('English uses one name per role: no leftover "community panel", "Access review" or "Requester"', () => {
+  const all = { ...LOCALES.en.u, ...LOCALES.en.s };
+  for (const [k, v] of Object.entries(all)) assert.doesNotMatch(v, /community panel|access review|\brequester\b/i, `${k}: ${v}`);
+  // Pidgin and Yoruba use the same panel name as the role strip wherever the panel is named on its own.
+  for (const k of ['rv_title', 'home_c2_h']) for (const l of ['pcm', 'yo']) assert.equal(LOCALES[l].u[k], LOCALES[l].u.role_panel, `${l}.${k}`);
+});

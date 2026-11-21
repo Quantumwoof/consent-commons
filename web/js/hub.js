@@ -70,9 +70,9 @@ function requestCard(r, mine) {
     el('ul', { class: 'steps' },
       el('li', {}, el('span', { class: 'dot', style: `background:${checksOk ? 'var(--good)' : 'var(--bad)'}`, 'aria-hidden': 'true' }, checksOk ? '✓' : '✗'),
         el('span', {}, checksOk ? T('hub_res_step_ok', { n: r.checks.eligible_count }) : el('span', {}, el('b', {}, T('hub_res_step_bad')), el('br'), r.checks.blocks.map((b) => blockText(b)).join(' ')))),
-      el('li', {}, el('span', { class: 'dot', style: `background:${doneVote ? 'var(--good)' : voteOpen ? 'var(--warn)' : '#9aa7a0'}`, 'aria-hidden': 'true' }, doneVote ? '✓' : '2'),
+      el('li', {}, el('span', { class: 'dot', style: `background:${doneVote ? 'var(--good)' : voteOpen ? 'var(--warn)' : '#5f6e66'}`, 'aria-hidden': 'true' }, doneVote ? '✓' : '2'),
         el('span', { class: voteOpen ? '' : doneVote ? '' : 'muted' }, voteOpen ? el('b', {}, T('hub_res_step_vote')) : doneVote ? T('hub_res_step_voted', { s: statusLabel(r.status === 'released' ? 'approved' : r.status) }) : T('hub_res_step_vote'))),
-      el('li', {}, el('span', { class: 'dot', style: `background:${r.status === 'released' ? 'var(--good)' : '#9aa7a0'}`, 'aria-hidden': 'true' }, r.status === 'released' ? '✓' : '3'),
+      el('li', {}, el('span', { class: 'dot', style: `background:${r.status === 'released' ? 'var(--good)' : '#5f6e66'}`, 'aria-hidden': 'true' }, r.status === 'released' ? '✓' : '3'),
         el('span', { class: r.status === 'released' ? '' : 'muted' }, r.status === 'released' ? T('hub_res_step_released') : T('hub_res_step_release')))),
     ['in_review', 'blocked'].includes(r.status) ? el('p', { class: 'small', style: 'margin:.6rem 0 0' }, el('a', { href: `/review.html?as=researcher&amend=${encodeURIComponent(q.request_id)}#new` }, T('hub_res_amend'))) : null);
 }

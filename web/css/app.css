@@ -273,3 +273,6 @@ body.page-review, body.page-ledger { --app-w: 1080px; }
 .phone header > div:nth-child(2) { min-width: 0; }
 .req-item .tag { font-size: .7rem; }
 #req-detail { scroll-margin-top: 70px; }
+/* QA fixes */
+html { scroll-padding-top: 120px; } /* anchored targets (#verify-receipt, request details) never hide under the sticky header */
+.dot { background: #5f6e66; }
