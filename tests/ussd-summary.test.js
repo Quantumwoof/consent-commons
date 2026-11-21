@@ -149,7 +149,9 @@ test('UI strings: every locale has every key with the same placeholders; Pidgin 
     for (const k of keys) { assert.ok(loc.u[k].trim(), `${code}.${k}`); assert.equal(ph(loc.u[k]), ph(LOCALES.en.u[k]), `${code}.${k}`); }
   }
   // Words Pidgin shares with English, language names and file/brand words. Everything else must differ.
-  const SAME = { pcm: new Set(['lang_en', 'lang_yo', 'rv_yes', 'rv_no', 'rv_days', 'rv_community', 'rv_f_name', 'rv_records', 'rv_th_record', 'rv_s_records', 'rv_r_vote', 'rv_community_tag', 'lg_file', 'lg_th_time', 'ent_genesis_key']), yo: new Set(['lang_yo']) };
+  const SAME = { pcm: new Set(['lang_en', 'lang_yo', 'rv_yes', 'rv_no', 'rv_days', 'rv_community', 'rv_f_name', 'rv_records', 'rv_th_record', 'rv_s_records', 'rv_r_vote', 'rv_community_tag', 'lg_file', 'lg_th_time', 'ent_genesis_key',
+    // app shell: role and tab names Nigerian Pidgin speakers use as-is
+    'role_researcher', 'title_researcher', 'rv_from_researcher', 'rv_seat_community', 'rv_seat_other', 'hub_res_demo', 'tab_home', 'tab_consent', 'tab_ussd', 'tab_myreq', 'tab_newreq', 'tab_rules_short', 'tab_requests_short', 'tab_releases_short']), yo: new Set(['lang_yo', 'tab_ussd']) };
   for (const code of ['pcm', 'yo']) for (const k of keys) if (!SAME[code].has(k)) assert.notEqual(LOCALES[code].u[k], LOCALES.en.u[k], `${code}.${k} is still English`);
   // common English-only words that real Pidgin replaces (dey, don, wey, dem ...)
   const english = /\b(is|are|was|were|has|have|isn't|don't|doesn't|please|will|would|cannot|must not)\b/i;

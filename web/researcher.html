@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Researcher · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_researcher">
+<meta name="description" content="A researcher follows their data request through automatic checks and the community review panel. Synthetic demo.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:researcher-->
+<main class="wrap hub" data-hub="researcher">
+  <div class="row"><h1 class="page-title" data-i18n="hub_res_h">Your request</h1><span class="spacer"></span><span class="small muted mono" id="my-req-id"></span></div>
+  <section id="my-request" aria-live="polite"></section>
+  <a class="btn btn-res btn-block" href="/review.html?as=researcher#new" data-i18n="hub_res_new">+ New data request</a>
+  <a class="btn btn-block" href="/review.html?as=researcher#rules" data-i18n="hub_res_rules">Rules your request must pass</a>
+  <section class="card" id="other-requests"></section>
+</main>
+<script type="module" src="/js/hub.js"></script>
+</body>
+</html>

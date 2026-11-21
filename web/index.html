@@ -9,53 +9,26 @@
 </head>
 <body>
 <!--CHROME:home-->
-<main class="wrap">
-  <section class="hero">
-    <div>
-      <h1 data-i18n="home_h1">The community decides who uses its mental-health data, for what, and what comes back.</h1>
-      <p class="lead" data-i18n="home_lead">Consent Commons is an open-source prototype of governance infrastructure for a mental-health data commons.</p>
-      <div class="row" style="margin-top:1rem">
-        <a class="btn btn-primary" href="/chat.html" data-i18n="home_btn_chat">Try the consent chat</a>
-        <a class="btn" href="/review.html" data-i18n="home_btn_review">Open the review panel</a>
-        <a class="btn" href="/ledger.html" data-i18n="home_btn_ledger">Audit the ledger</a>
-        <a class="btn" href="/ussd.html" data-i18n="home_btn_ussd">No data? Try USSD (simulation)</a>
-      </div>
-    </div>
-    <div class="card">
-      <h3 data-i18n="home_why_h">Why this exists</h3>
-      <p class="small" data-i18n="home_why_p"></p>
-      <div class="callout callout-warn small" data-i18n-html="home_synth_html"></div>
-    </div>
-  </section>
-
-  <h2 style="margin-top:1.5rem" data-i18n="home_how_h">How it works</h2>
-  <div class="flow" style="margin:.6rem 0 1.5rem">
-    <div data-i18n-html="home_f1_html"></div><div data-i18n-html="home_f2_html"></div><div data-i18n-html="home_f3_html"></div>
-    <div data-i18n-html="home_f4_html"></div><div data-i18n-html="home_f5_html"></div><div data-i18n-html="home_f6_html"></div>
+<main class="launch">
+  <p class="lead" data-i18n="launch_lead">Young people decide who may use their mental-health data, for what, and what comes back to the community.</p>
+  <h1 data-i18n="launch_who">Who are you?</h1>
+  <nav class="tiles" data-i18n-attr="aria-label:launch_who">
+    <a class="tile role-community" href="/community.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="role_community">Community member</b><p data-i18n="launch_com_p">Say yes or no to research, change your mind, see what was shared.</p></span><span class="go" aria-hidden="true">›</span></a>
+    <a class="tile role-researcher" href="/researcher.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="role_researcher">Researcher</b><p data-i18n="launch_res_p">Ask to use the data and follow your request.</p></span><span class="go" aria-hidden="true">›</span></a>
+    <a class="tile role-panel" href="/panel.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="role_panel">Review panel</b><p data-i18n="launch_pan_p">Approve or reject requests. 3 of 5 votes, 2 from community seats.</p></span><span class="go" aria-hidden="true">›</span></a>
+  </nav>
+  <div class="launch-links">
+    <a class="role-audit" href="/ledger.html"><span class="shape" aria-hidden="true"></span><span data-i18n="launch_audit">Audit the ledger</span></a>
+    <a class="quiet" href="/about.html" data-i18n="launch_about">About this project</a>
   </div>
-
-  <div class="feature-grid">
-    <a class="card feature" href="/chat.html"><div class="num" data-i18n="home_c1_num"></div><h3 data-i18n="home_c1_h"></h3><p class="small muted" data-i18n="home_c1_p"></p></a>
-    <a class="card feature" href="/review.html"><div class="num" data-i18n="home_c2_num"></div><h3 data-i18n="home_c2_h"></h3><p class="small muted" data-i18n="home_c2_p"></p></a>
-    <a class="card feature" href="/ledger.html"><div class="num" data-i18n="home_c3_num"></div><h3 data-i18n="home_c3_h"></h3><p class="small muted" data-i18n="home_c3_p"></p></a>
-    <a class="card feature" href="/ussd.html"><div class="num" data-i18n="home_c4_num"></div><h3 data-i18n="home_c4_h"></h3><p class="small muted" data-i18n-html="home_c4_html"></p></a>
-    <a class="card feature" href="/summary.html"><div class="num" data-i18n="home_c5_num"></div><h3 data-i18n="home_c5_h"></h3><p class="small muted" data-i18n="home_c5_p"></p></a>
-    <a class="card feature" href="https://github.com/Quantumwoof/consent-commons/blob/main/docs/SCHEMA.md"><div class="num" data-i18n="home_c6_num"></div><h3 data-i18n="home_c6_h"></h3><p class="small muted" data-i18n-html="home_c6_html"></p></a>
-  </div>
-
-  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(min(320px,100%),1fr)); margin-top:1.5rem">
-    <div class="card">
-      <h3 data-i18n="home_is_h">What this is, and is not</h3>
-      <ul class="small"><li data-i18n-html="home_is1_html"></li><li data-i18n-html="home_is2_html"></li><li data-i18n-html="home_is3_html"></li><li data-i18n-html="home_is4_html"></li></ul>
-    </div>
-    <div class="card">
-      <h3 data-i18n="home_open_h">Open by default</h3>
-      <p class="small" data-i18n="home_open_p"></p>
-      <pre class="json">npx github:Quantumwoof/consent-commons verify ledger.jsonl</pre>
-      <p class="small"><a href="https://github.com/Quantumwoof/consent-commons" data-i18n="home_open_link">Source code on GitHub →</a></p>
-    </div>
+  <div class="card how">
+    <b data-i18n="launch_how_h">How it works</b>
+    <ol class="steps">
+      <li class="role-community"><span class="dot" style="background:var(--rc)" aria-hidden="true">1</span><span data-i18n-html="launch_how1_html"></span></li>
+      <li class="role-researcher"><span class="dot" style="background:var(--rc)" aria-hidden="true">2</span><span data-i18n-html="launch_how2_html"></span></li>
+      <li class="role-panel"><span class="dot" style="background:var(--rc)" aria-hidden="true">3</span><span data-i18n-html="launch_how3_html"></span></li>
+    </ol>
   </div>
 </main>
-<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
 </body>
 </html>

@@ -17,6 +17,10 @@ const violation = (v) => ruleText(v.rule, v.message);
 let commons, filter = '';
 const TONE = { GENESIS: 'neutral', CONSENT_GRANTED: 'good', CONSENT_WITHDRAWN: 'bad', ACCESS_REQUESTED: 'info', REVIEW_VOTE: 'neutral', ACCESS_DECIDED: 'warn', DATA_RELEASED: 'good', WITHDRAWAL_NOTICE_ISSUED: 'bad', BENEFIT_DELIVERED: 'good' };
 
+// Who wrote each entry, in the same colour, shape and words as the rest of the app.
+const actorRole = (a = '') => (a.startsWith('person:') ? 'community' : a.startsWith('requester:') ? 'researcher' : a.startsWith('reviewer:') || a === 'panel' ? 'panel' : 'audit');
+const actorTag = (a) => { const r = actorRole(a); return el('span', { class: `tag role-${r}` }, el('span', { class: 'shape', 'aria-hidden': 'true' }), T(r === 'audit' ? 'role_steward' : 'role_' + r)); };
+
 function summary(e) {
   const d = e.data;
   switch (e.type) {
@@ -57,7 +61,7 @@ function renderEntries() {
   const rows = entries.filter((e) => !filter || e.type === filter).reverse();
   $('#entries').replaceChildren(el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, T('lg_th_time')), el('th', {}, T('lg_th_type')), el('th', {}, T('lg_th_what')), el('th', {}, 'Hash'), el('th', {}, 'Prev'))),
     el('tbody', {}, rows.map((e) => {
-      const tr = el('tr', { class: 'clickable', tabindex: '0' }, el('td', {}, e.seq), el('td', { class: 'small' }, fmtTime(e.ts)), el('td', {}, pill(e.type, TONE[e.type])), el('td', {}, summary(e), el('div', { class: 'small muted' }, e.actor)), el('td', { class: 'mono small' }, short(e.hash, 10)), el('td', { class: 'mono small' }, short(e.prev, 10)));
+      const tr = el('tr', { class: 'clickable', tabindex: '0' }, el('td', {}, e.seq), el('td', { class: 'small' }, fmtTime(e.ts)), el('td', {}, pill(e.type, TONE[e.type])), el('td', {}, summary(e), el('div', { class: 'row small muted', style: 'margin-top:.2rem;gap:.4rem' }, actorTag(e.actor), e.actor)), el('td', { class: 'mono small' }, short(e.hash, 10)), el('td', { class: 'mono small' }, short(e.prev, 10)));
       const toggle = () => { if (tr.nextSibling?.dataset?.detail) tr.nextSibling.remove(); else tr.after(el('tr', { 'data-detail': '1' }, el('td', { colspan: '6' }, el('pre', { class: 'json' }, JSON.stringify(e, null, 2))))); };
       tr.addEventListener('click', toggle); tr.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') toggle(); });
       return tr;

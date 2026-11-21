@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Community member · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_community">
+<meta name="description" content="What a community member can do: give, change or withdraw consent, use USSD with no data, see what was shared. Synthetic demo.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:community-->
+<main class="wrap hub" data-hub="community">
+  <h1 class="page-title" data-i18n="hub_com_h">What would you like to do?</h1>
+  <div class="tiles">
+  <a class="tile role-community" href="/chat.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="hub_com_chat_h"></b><p data-i18n="hub_com_chat_p"></p></span><span class="go" aria-hidden="true">›</span></a>
+  <a class="tile role-community" href="/ussd.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="hub_com_ussd_h"></b><p data-i18n="hub_com_ussd_p"></p></span><span class="go" aria-hidden="true">›</span></a>
+  <a class="tile role-community" href="/summary.html"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="hub_com_sum_h"></b><p data-i18n="hub_com_sum_p"></p></span><span class="go" aria-hidden="true">›</span></a>
+  <a class="tile role-community" href="/ledger.html#verify-receipt"><span class="ic" aria-hidden="true"><span class="shape"></span></span><span><b data-i18n="hub_com_rc_h"></b><p data-i18n="hub_com_rc_p"></p></span><span class="go" aria-hidden="true">›</span></a>
+  </div>
+  <section class="card" id="my-consent" aria-live="polite"></section>
+</main>
+<script type="module" src="/js/hub.js"></script>
+</body>
+</html>

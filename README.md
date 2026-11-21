@@ -40,7 +40,7 @@ SRHIN already runs AI mental-health tools (its BraveHeart WhatsApp companion and
   ```bash
   git clone https://github.com/Quantumwoof/consent-commons && cd consent-commons
   npm start            # builds dist/ and serves http://localhost:5173
-  npm install && npm test   # 57 tests (Ajv is the only dev dependency, for schema tests)
+  npm install && npm test   # 66 tests (Ajv is the only dev dependency, for schema tests)
   ```
 - **Audit a ledger from the command line:**
   ```bash
@@ -51,11 +51,22 @@ SRHIN already runs AI mental-health tools (its BraveHeart WhatsApp companion and
   node bin/commons.js validate examples/consent-terms.example.json --schema consent-terms
   ```
 
+**Who are you?** The app opens on a launch screen with three roles, each with its own colour, shape and home screen, and a strip on every page saying whose view it is:
+
+| Role | Marked by | Home screen | What they do |
+|---|---|---|---|
+| Community member | green circle | [community.html](web/community.html) | Give, change or withdraw consent (chat or USSD), see what was shared, check a receipt |
+| Researcher | blue square | [researcher.html](web/researcher.html) | Write or change a data request and follow it through the checks and the panel vote (`review.html?as=researcher`) |
+| Review panel | purple diamond | [panel.html](web/panel.html) | Vote on requests (3 of 5, incl. 2 of 3 community seats), release data, track benefits |
+| Anyone | grey ring | [ledger.html](web/ledger.html) | Audit the public ledger |
+
+The longer explanation lives on [about.html](web/about.html).
+
 ### A 2-minute walkthrough of the demo
 
 1. **Consent chat:** pick Pidgin. Choose what to share and with whom. Get one comprehension question wrong on purpose: it re-explains and asks again. Say yes; keep the code.
-2. **Access review → Requests:** the seeded story shows every path. A public-health study **released**; a commercial chatbot company **blocked** automatically (0 people consented to that); an NGO request **amended** mid-review, so the earlier vote no longer counts; a follow-up **blocked** because it names someone who withdrew; and a state agency request that passed every automatic check but was **rejected by the community seats** because "enforcement teams" were not what people agreed to.
-3. **New request:** type a request and watch the live preview tell you how many people's consent covers it, and why the others are excluded.
+2. **Review panel → Requests to review:** the seeded story shows every path. A public-health study **released**; a commercial chatbot company **blocked** automatically (0 people consented to that); an NGO request **amended** mid-review, so the earlier vote no longer counts; a follow-up **blocked** because it names someone who withdrew; and a state agency request that passed every automatic check but was **rejected by the community seats** because "enforcement teams" were not what people agreed to.
+3. **Researcher → New data request:** type a request and watch the live preview tell you how many people's consent covers it, and why the others are excluded.
 4. **Back in the chat:** type `WITHDRAW` and your code. If you were in a release, the recipient gets a deletion notice (see *Releases & benefits*).
 5. **No data? USSD:** open *USSD*, dial `*347*22#`, press 2 and use the sample code (a synthetic person in the released study). Then open the release's **plain-words summary**: a new withdrawal notice appears and the badge is still green. Press "Try a changed copy" to see it fail.
 6. **Ledger → Tamper lab:** edit a consent, delete a withdrawal, or rewrite history and re-hash everything, then see which defence catches each one.
@@ -140,10 +151,10 @@ A starting point only. In the Embedded track, the project is co-defined with the
 ```
 src/core/       consent terms, policy checks, ledger, rulebook + engine, signatures, synthetic data
 src/i18n/       en, pcm (Pidgin), yo (Yorùbá) strings; notice fingerprints; comprehension questions
-web/            static demo: chat, review dashboard, release summary, USSD simulation, ledger explorer (no framework, no build step beyond copying)
+web/            static demo: launch screen + role home screens (community, researcher, panel), chat, review dashboard, release summary, USSD simulation, ledger explorer (no framework, no build step beyond copying)
 schema/         JSON Schemas (generated from src/core/vocab.js; tests fail if they drift)
 bin/commons.js  CLI: seed, verify, verify-receipt, check, tamper-demo, validate
-tests/          57 tests (node:test)
+tests/          66 tests (node:test)
 docs/           EXPLAINER, SCHEMA, THREAT_MODEL, TRANSLATION_REVIEW, USER_TESTING_KIT (draft)
 ```
 

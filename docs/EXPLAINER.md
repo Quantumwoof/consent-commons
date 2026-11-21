@@ -158,7 +158,7 @@ The Tamper lab on the Ledger page shows all three attacks (edit, delete, rewrite
 
 Say:
 - "Working prototype, open source, on synthetic data."
-- "57 automated tests, including tamper-detection tests."
+- "66 automated tests, including tamper-detection tests."
 - "Translations are drafts awaiting native-speaker review."
 - "Designed for SRHIN's published brief; not an SRHIN tool."
 
@@ -205,6 +205,6 @@ Don't say:
 | `src/core/ussd.js` | the USSD session: menus, ≤ 160-character screens, check and withdraw through the same engine as the chat |
 | `web/*` | the pages (chat, review, summary, USSD, ledger); `store.js` keeps the demo in your browser |
 | `bin/commons.js` | the command-line auditor |
-| `tests/*` | 57 tests; read `tests/commons.test.js` for the rules in action |
+| `tests/*` | 66 tests; read `tests/commons.test.js` for the rules in action |
 
 **Practise:** run `npm test`, then `node bin/commons.js tamper-demo examples/demo-ledger.jsonl`, and explain out loud what each line of output means. If you can do that, you can defend this project.

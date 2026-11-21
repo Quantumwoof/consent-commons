@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About this project · Consent Commons (synthetic demo)</title>
+<meta name="cc-title" content="title_about">
+<meta name="description" content="An open-source prototype of community-owned consent, access review and benefit-sharing for Nigerian mental-health data. Pidgin, Yorùbá and English. Synthetic data only.">
+<link rel="stylesheet" href="/css/app.css"><link rel="icon" href="/favicon.svg">
+</head>
+<body>
+<!--CHROME:about-->
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <h1 data-i18n="home_h1">The community decides who uses its mental-health data, for what, and what comes back.</h1>
+      <p class="lead" data-i18n="home_lead">Consent Commons is an open-source prototype of governance infrastructure for a mental-health data commons.</p>
+    </div>
+    <div class="card">
+      <h3 data-i18n="home_why_h">Why this exists</h3>
+      <p class="small" data-i18n="home_why_p"></p>
+      <div class="callout callout-warn small" data-i18n-html="home_synth_html"></div>
+    </div>
+  </section>
+
+  <h2 style="margin-top:1.5rem" data-i18n="home_how_h">How it works</h2>
+  <div class="flow" style="margin:.6rem 0 1.5rem">
+    <div data-i18n-html="home_f1_html"></div><div data-i18n-html="home_f2_html"></div><div data-i18n-html="home_f3_html"></div>
+    <div data-i18n-html="home_f4_html"></div><div data-i18n-html="home_f5_html"></div><div data-i18n-html="home_f6_html"></div>
+  </div>
+
+  <div class="feature-grid">
+    <a class="card feature" href="/chat.html"><div class="num" data-i18n="home_c1_num"></div><h3 data-i18n="home_c1_h"></h3><p class="small muted" data-i18n="home_c1_p"></p></a>
+    <a class="card feature" href="/review.html"><div class="num" data-i18n="home_c2_num"></div><h3 data-i18n="home_c2_h"></h3><p class="small muted" data-i18n="home_c2_p"></p></a>
+    <a class="card feature" href="/ledger.html"><div class="num" data-i18n="home_c3_num"></div><h3 data-i18n="home_c3_h"></h3><p class="small muted" data-i18n="home_c3_p"></p></a>
+    <a class="card feature" href="/ussd.html"><div class="num" data-i18n="home_c4_num"></div><h3 data-i18n="home_c4_h"></h3><p class="small muted" data-i18n-html="home_c4_html"></p></a>
+    <a class="card feature" href="/summary.html"><div class="num" data-i18n="home_c5_num"></div><h3 data-i18n="home_c5_h"></h3><p class="small muted" data-i18n="home_c5_p"></p></a>
+    <a class="card feature" href="https://github.com/Quantumwoof/consent-commons/blob/main/docs/SCHEMA.md"><div class="num" data-i18n="home_c6_num"></div><h3 data-i18n="home_c6_h"></h3><p class="small muted" data-i18n-html="home_c6_html"></p></a>
+  </div>
+
+  <div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(min(320px,100%),1fr)); margin-top:1.5rem">
+    <div class="card">
+      <h3 data-i18n="home_is_h">What this is, and is not</h3>
+      <ul class="small"><li data-i18n-html="home_is1_html"></li><li data-i18n-html="home_is2_html"></li><li data-i18n-html="home_is3_html"></li><li data-i18n-html="home_is4_html"></li></ul>
+    </div>
+    <div class="card">
+      <h3 data-i18n="home_open_h">Open by default</h3>
+      <p class="small" data-i18n="home_open_p"></p>
+      <pre class="json">npx github:Quantumwoof/consent-commons verify ledger.jsonl</pre>
+      <p class="small"><a href="https://github.com/Quantumwoof/consent-commons" data-i18n="home_open_link">Source code on GitHub →</a></p>
+    </div>
+  </div>
+</main>
+<footer class="footer" data-i18n-html="footer_html">Consent Commons · independent open-source prototype · synthetic data only · <a href="https://github.com/Quantumwoof/consent-commons">GitHub</a></footer>
+</body>
+</html>

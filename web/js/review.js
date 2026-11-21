@@ -8,6 +8,26 @@ import { syntheticDataset } from '/src/core/synthetic-records.js';
 import { t as ts, tu } from '/src/i18n/index.js';
 import { getLang, onLang } from './lang.js';
 import { blockText, warnText, conflictText, errText } from './explain.js';
+import { ROLES, roleBar, tabBar } from './roles.js';
+import { applyStatic } from './lang.js';
+
+// Two people use this page. The review panel (default) votes and releases; a researcher (?as=researcher)
+// writes or changes a request and reads the rules, and cannot vote. The role strip, tab bar and back button
+// follow, so it is always clear whose view this is. The rules and the core logic are the same for both.
+const params = new URLSearchParams(location.search);
+const AS = params.get('as') === 'researcher' ? 'researcher' : 'panel';
+const TABS = AS === 'researcher' ? ['new', 'rules'] : ['requests', 'releases', 'pool', 'rules'];
+const MYREQ = 'cc.myRequest.v1';
+if (AS === 'researcher') {
+  document.getElementById('rolebar')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: roleBar('researcher') }).firstChild);
+  document.getElementById('tabbar')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: tabBar('researcher', 'new') }).firstChild);
+  document.body.classList.replace('as-panel', 'as-researcher');
+  const back = document.getElementById('app-back'); if (back) back.href = ROLES.researcher.hub;
+  $('#acting-note').dataset.i18n = 'rv_res_note';
+  $('[data-i18n="rv_title"]').dataset.i18n = 'rv_res_title';
+  applyStatic();
+}
+document.querySelectorAll('[role=tab]').forEach((b) => { b.hidden = !TABS.includes(b.dataset.tab); });
 
 // All page text comes from the locale files (T = page text, V = vocabulary wording people consented to).
 // Free text typed by requesters and reviewers, organisation names and machine codes are shown as written.
@@ -15,17 +35,20 @@ const T = (k, v) => tu(getLang(), k, v);
 const V = (prefix, code) => ts(getLang(), prefix + code);
 const seatLabel = (m) => T('seat_' + m.seat);
 
-let commons, S, selected = null, tab = ['requests', 'new', 'releases', 'pool', 'rules'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'requests';
+let commons, S, selected = params.get('req'), tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : TABS[0];
 const ORDER = { in_review: 0, approved: 1, blocked: 2, released: 3, rejected: 4 };
 
 async function refresh() { S = await commons.state(); render(); }
 function persist() { save(commons); }
 
-document.querySelectorAll('[role=tab]').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.tab; render(); }));
+document.querySelectorAll('[role=tab]').forEach((b) => b.addEventListener('click', () => { tab = b.dataset.tab; history.replaceState(null, '', '#' + tab); render(); }));
+// The phone tab bar links to #requests, #releases, ... on this same page.
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h) && h !== tab) { tab = h; render(); window.scrollTo(0, 0); } });
 
 function render() {
   document.querySelectorAll('[role=tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
   for (const id of ['requests', 'new', 'releases', 'pool', 'rules']) $(`#tab-${id}`).hidden = id !== tab;
+  document.querySelectorAll('#tabbar a').forEach((a) => { if (a.dataset.tabKey === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   if (tab === 'requests') renderRequests();
   if (tab === 'new') renderNew();
   if (tab === 'releases') renderReleases();
@@ -37,8 +60,9 @@ function render() {
 function renderRequests() {
   const reqs = [...S.requests.values()].sort((a, b) => ORDER[a.status] - ORDER[b.status] || b.updated_seq - a.updated_seq);
   if (!selected || !S.requests.has(selected)) selected = reqs[0]?.request.request_id;
-  $('#req-list').replaceChildren(...reqs.map((r) => el('button', { class: 'req-item', type: 'button', 'aria-current': String(r.request.request_id === selected), onclick: () => { selected = r.request.request_id; renderRequests(); } },
+  $('#req-list').replaceChildren(...reqs.map((r) => el('button', { class: 'req-item', type: 'button', 'aria-current': String(r.request.request_id === selected), onclick: () => { selected = r.request.request_id; renderRequests(); if (matchMedia('(max-width: 899px)').matches) $('#req-detail').scrollIntoView({ block: 'start' }); } },
     el('div', { class: 'row' }, el('span', { class: 'org' }, r.request.requester.organisation), el('span', { class: 'spacer' }), pill(statusLabel(r.status), STATUS_TONE[r.status])),
+    el('div', {}, el('span', { class: 'tag role-researcher' }, el('span', { class: 'shape', 'aria-hidden': 'true' }), T('rv_from_researcher'))),
     el('div', { class: 'purpose' }, V('pur_', r.request.purpose.code)),
     el('div', { class: 'small muted' }, `v${r.request.version} · ${r.checks.passed ? T('rv_people_covered', { n: r.checks.eligible_count }) : r.checks.blocks[0]?.code} · ${fmtDate(r.submitted_at)}`))));
   const r = S.requests.get(selected);
@@ -68,6 +92,7 @@ function detail(r) {
   const live = runChecks(q, S.consents, S.policy, new Date(), S.releases);
   const changed = r.status !== 'released' && r.status !== 'rejected' && (live.passed !== r.checks.passed || live.eligible_count !== r.checks.eligible_count);
   const card = el('div', { class: 'card' },
+    el('div', { class: 'row', style: 'margin-bottom:.4rem' }, el('span', { class: 'tag role-researcher' }, el('span', { class: 'shape', 'aria-hidden': 'true' }), T('rv_from_researcher'))),
     el('div', { class: 'row' }, el('h2', { style: 'margin:0' }, q.requester.organisation), pill(statusLabel(r.status), STATUS_TONE[r.status]), el('span', { class: 'spacer' }),
       el('span', { class: 'small muted' }, T('rv_digest') + ' '), el('span', { class: 'digest', title: r.digest }, short(r.digest, 16))),
     el('p', { class: 'muted small', style: 'margin:.2rem 0 .8rem' }, T('rv_meta', { name: q.requester.name, type: V('usr_', q.requester.type), country: q.requester.country ?? '', v: q.version, time: fmtTime(q.submitted_at) })),
@@ -94,8 +119,9 @@ function detail(r) {
 function panelView(r, t) {
   const seats = S.policy.panel.map((m) => {
     const v = r.votes.find((x) => x.reviewer_id === m.id);
-    return el('div', { class: `seat ${v ? 'voted-' + v.vote : ''}` },
-      el('div', { class: 'row' }, el('span', { class: 'who' }, seatLabel(m)), m.community ? pill(T('rv_community'), 'info') : null),
+    return el('div', { class: `seat ${m.community ? 'role-community' : 'role-panel'} ${v ? 'voted-' + v.vote : ''}` },
+      el('span', { class: `tag ${m.community ? 'role-community' : 'role-panel'}` }, el('span', { class: 'shape', 'aria-hidden': 'true' }), T(m.community ? 'rv_seat_community' : 'rv_seat_other')),
+      el('span', { class: 'who' }, seatLabel(m)),
       v ? el('div', {}, el('b', {}, v.vote === 'approve' ? T('rv_approve_v') : T('rv_reject_v')), el('div', { class: 'reason' }, `“${v.reason}”`), el('div', { class: 'small muted' }, T('rv_bound', { d: short(v.request_digest, 10) })))
         : el('div', { class: 'muted' }, r.status === 'in_review' ? T('rv_not_voted') : '—'));
   });
@@ -107,6 +133,11 @@ function panelView(r, t) {
 
 function actions(r, live) {
   const box = el('div', {});
+  if (AS === 'researcher') {
+    box.append(el('p', { class: 'small muted', style: 'margin-top:1rem' }, T('rv_res_note')));
+    if (['in_review', 'blocked'].includes(r.status)) box.append(el('button', { class: 'btn', type: 'button', onclick: () => { draft = structuredClone(r.request); amending = r.request.request_id; tab = 'new'; render(); } }, T('rv_amend_btn')));
+    return box;
+  }
   if (r.status === 'in_review') {
     const voted = new Set(r.votes.map((v) => v.reviewer_id));
     const seat = el('select', { id: 'vote-seat' }, S.policy.panel.filter((m) => !voted.has(m.id)).map((m) => el('option', { value: m.id }, seatLabel(m))));
@@ -133,8 +164,7 @@ function actions(r, live) {
       } }, live.passed ? T('rv_release_btn', { org: r.request.requester.organisation }) : T('rv_release_blocked')));
   }
   if (['in_review', 'blocked'].includes(r.status)) {
-    box.append(el('div', { class: 'section-title' }, T('rv_requester')),
-      el('button', { class: 'btn', type: 'button', onclick: () => { draft = structuredClone(r.request); amending = r.request.request_id; tab = 'new'; render(); } }, T('rv_amend_btn')));
+    box.append(el('div', { class: 'section-title' }, T('rv_requester')), el('p', { class: 'small muted', style: 'margin:0' }, T('rv_pan_amend_note')));
   }
   if (r.status === 'released') box.append(el('p', {}, el('a', { href: '#', onclick: (e) => { e.preventDefault(); tab = 'releases'; render(); } }, T('rv_see_release', { id: r.release_id }))));
   return box;
@@ -182,6 +212,7 @@ function renderNew() {
         for (const k of ['request_id', 'version', 'submitted_at']) delete req[k];
         const res = amending ? await commons.amendRequest(amending, req) : await commons.submitRequest(req);
         persist(); toast(res.checks.passed ? T('rv_t_submitted') : T('rv_t_blocked'), res.checks.passed ? 'good' : 'bad');
+        if (AS === 'researcher') { localStorage.setItem(MYREQ, res.request.request_id); setTimeout(() => { location.href = `/researcher.html?req=${encodeURIComponent(res.request.request_id)}`; }, 900); return; }
         selected = res.request.request_id; draft = null; amending = null; tab = 'requests'; await refresh();
       } catch (e) { toast(errText(e), 'bad'); }
     } }, amending ? T('rv_submit_amend') : T('rv_submit')), el('span', { class: 'small muted' }, T('rv_submit_note'))));
@@ -277,6 +308,10 @@ function renderRules() {
 }
 
 commons = await loadCommons();
+{ // ?amend=<id>: a researcher came from their home screen to change their request.
+  const id = params.get('amend'); const st = await commons.state();
+  if (AS === 'researcher' && id && st.requests.has(id)) { draft = structuredClone(st.requests.get(id).request); amending = id; tab = 'new'; }
+}
 onExternalChange(async (c) => { commons = c; await refresh(); });
 onLang(() => render());
 await refresh();
