@@ -4,8 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { LOCALES } from '../src/i18n/index.js';
-import { ROLES, PAGES, FROM, roleBar, tabBar, backFor } from '../web/js/roles.js';
+import { LOCALES, tu } from '../src/i18n/index.js';
+import { ROLES, PAGES, FROM, roleBar, tabBar, backFor, chromeFor } from '../web/js/roles.js';
 
 const root = new URL('../', import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), 'utf8');
@@ -130,4 +130,68 @@ test('tamper lab says it is a simulation and names the check that caught it, in 
   }
   assert.match(LOCALES.en.u.lg_tamper_p, /dishonest operator/);
   assert.match(LOCALES.en.u.lg_tamper_p, /never touched/);
+});
+
+test('chromeFor: review?as=researcher is the researcher view from the first paint; other URL overrides match backFor', () => {
+  const r = chromeFor('review', 'as=researcher', '#new');
+  assert.equal(r.role, 'researcher');
+  assert.equal(r.tabRole, 'researcher');
+  assert.equal(r.href, '/researcher.html');
+  assert.equal(r.tab, 'new');
+  assert.equal(r.titleKey, 'rv_res_title');
+  assert.deepEqual(r.tabs, ['new', 'rules']);
+  assert.equal(chromeFor('review', 'as=researcher', '#rules').tab, 'rules');
+  assert.equal(chromeFor('review', 'as=researcher').tab, 'new');
+  assert.equal(chromeFor('review', '', '#releases').role, 'panel');
+  assert.equal(chromeFor('review', '', '#releases').tab, 'releases');
+  assert.equal(chromeFor('review').href, '/panel.html');
+  assert.equal(chromeFor('summary', 'from=releases').role, 'panel');
+  assert.equal(chromeFor('summary', 'from=releases').href, '/review.html#releases');
+  assert.equal(chromeFor('summary').role, 'community');
+  assert.deepEqual([chromeFor('ledger', 'from=community').role, chromeFor('ledger', 'from=community').tabRole], ['audit', 'community']);
+  assert.equal(chromeFor('ledger', 'from=community').href, '/community.html');
+  assert.equal(chromeFor('home'), null);
+  assert.equal(chromeFor('about').href, '/');
+});
+
+test('the build puts a classic boot script in <head> so the researcher view does not paint the panel role', () => {
+  execFileSync(process.execPath, ['scripts/build.js'], { cwd: new URL('.', root) });
+  const review = read('dist/review.html');
+  const head = review.slice(0, review.indexOf('</head>'));
+  assert.match(head, /<script src="\/js\/boot-role\.js"><\/script>/);
+  assert.match(review, /<script src="\/js\/boot-role\.js"><\/script>\s*<script type="module" src="\/js\/lang\.js">/);
+  const boot = read('web/js/boot-role.js');
+  assert.doesNotMatch(boot, /\bexport\b/);
+  assert.match(boot, /as === 'researcher'|get\('as'\) === 'researcher'/);
+  assert.match(boot, /data-cc-boot/);
+  const css = read('web/css/app.css');
+  assert.match(css, /html\[data-cc-boot="researcher"\]/);
+  assert.match(css, /\.rolebar\.role-panel/);
+  assert.ok(existsSync(new URL('dist/js/boot-role.js', root)));
+});
+
+test('back button targets stay the same in English, Pidgin and Yoruba (including at phone width)', () => {
+  // The href is not language- or viewport-dependent; the visible label is. At 390px the phone
+  // tab bar is shown, but the header back button is the same control and the same target.
+  const cases = [
+    ['review', 'as=researcher', '/researcher.html', 'role_researcher'],
+    ['review', '', '/panel.html', 'role_panel'],
+    ['summary', 'from=releases', '/review.html#releases', 'tab_releases_short'],
+    ['ledger', 'from=community', '/community.html', 'role_community'],
+    ['ledger', 'from=panel', '/panel.html', 'role_panel'],
+    ['ussd', 'from=chat', '/chat.html', 'nav_chat'],
+    ['community', '', '/', 'app_start'],
+  ];
+  for (const [page, search, href, label] of cases) {
+    const c = chromeFor(page, search);
+    assert.equal(c.href, href, page + ' ' + search);
+    assert.equal(c.label, label);
+    for (const l of LANGS) {
+      const text = tu(l, 'app_back_to', { place: LOCALES[l].u[label] });
+      assert.ok(text && !text.includes('{place}'), l + ' ' + label + ': ' + text);
+      assert.notEqual(LOCALES[l].u[label].trim(), '', l + '.' + label);
+    }
+    assert.notEqual(tu('pcm', 'app_back_to', { place: LOCALES.pcm.u[label] }), tu('en', 'app_back_to', { place: LOCALES.en.u[label] }));
+    assert.notEqual(tu('yo', 'app_back_to', { place: LOCALES.yo.u[label] }), tu('en', 'app_back_to', { place: LOCALES.en.u[label] }));
+  }
 });

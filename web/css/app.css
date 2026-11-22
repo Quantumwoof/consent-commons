@@ -202,6 +202,13 @@ body.page-review, body.page-ledger { --app-w: 1080px; }
 .role-community { --rc: var(--com); --rbg: var(--com-bg); } .role-researcher { --rc: var(--res); --rbg: var(--res-bg); }
 .role-panel { --rc: var(--pan); --rbg: var(--pan-bg); } .role-audit { --rc: var(--aud); --rbg: var(--aud-bg); }
 .rolebar { background: var(--rbg); color: var(--rc); }
+/* Hide baked-in chrome that does not match the URL, until boot-role.js swaps it (before first paint). */
+html[data-cc-boot="researcher"] .rolebar.role-panel,
+html[data-cc-boot="researcher"] .tabbar.role-panel,
+html[data-cc-boot="researcher"] [data-i18n="rv_title"],
+html[data-cc-boot="researcher"] #acting-note[data-i18n="rv_acting"] { visibility: hidden; }
+html[data-cc-boot="panel"] .rolebar.role-community,
+html[data-cc-boot="panel"] .tabbar.role-community { visibility: hidden; }
 /* Shapes: community = circle, researcher = square, panel = diamond, audit = ring. Always next to a text label. */
 .shape { display: inline-block; width: 12px; height: 12px; flex: none; background: var(--rc, currentColor); border-radius: 50%; }
 .role-researcher .shape, .shape.s-researcher { border-radius: 2px; }

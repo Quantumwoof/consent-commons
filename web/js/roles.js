@@ -60,3 +60,27 @@ export const tabBar = (role, active) => (ROLES[role]?.tabs.length
   ? `<nav class="tabbar role-${role}" id="tabbar" aria-label="${role}" data-i18n-attr="aria-label:role_${role}">${ROLES[role].tabs
     .map(([k, href, key]) => `<a href="${href}" data-tab-key="${k}"${k === active ? ' aria-current="page"' : ''}><span class="shape" aria-hidden="true"></span><span data-i18n="${key}">${key}</span></a>`).join('')}</nav>`
   : '');
+
+/**
+ * Chrome the URL should show: role strip, tab bar, back target, and (on the researcher
+ * request screen) the page title. Null only when the page has no back button (the start
+ * screen). Used by shell.js and, as a copy, by the classic boot-role.js script so the
+ * right role is in the DOM before first paint — module scripts run too late for that.
+ */
+export function chromeFor(page, search = '', hash = '') {
+  const q = search instanceof URLSearchParams ? search : new URLSearchParams(String(search).replace(/^\?/, ''));
+  const h = String(hash || '').replace(/^#/, '');
+  if (page === 'review' && q.get('as') === 'researcher') {
+    return {
+      role: 'researcher', tabRole: 'researcher', tab: h === 'rules' ? 'rules' : 'new',
+      href: ROLES.researcher.hub, label: 'role_researcher',
+      titleKey: 'rv_res_title', noteKey: 'rv_res_note', docTitleKey: 'title_researcher',
+      tabs: ['new', 'rules'],
+    };
+  }
+  const b = backFor(page, q.get('from'));
+  if (!b) return null;
+  let tab = b.tab;
+  if (page === 'review' && ['requests', 'new', 'releases', 'pool', 'rules'].includes(h)) tab = h;
+  return { role: b.role, tabRole: b.tabRole, tab, href: b.href, label: b.label };
+}

@@ -13,7 +13,9 @@ import { applyStatic } from './lang.js';
 
 // Two people use this page. The review panel (default) votes and releases; a researcher (?as=researcher)
 // writes or changes a request and reads the rules, and cannot vote. The role strip, tab bar and back button
-// follow, so it is always clear whose view this is. The rules and the core logic are the same for both.
+// follow, so it is always clear whose view this is. First paint of the researcher view is done by
+// boot-role.js (classic script); this module keeps the same swap as a fallback. The rules and the core
+// logic are the same for both.
 const params = new URLSearchParams(location.search);
 const AS = params.get('as') === 'researcher' ? 'researcher' : 'panel';
 const TABS = AS === 'researcher' ? ['new', 'rules'] : ['requests', 'releases', 'pool', 'rules'];

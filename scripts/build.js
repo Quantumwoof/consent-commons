@@ -15,6 +15,7 @@ const CHROME = (page) => {
   ${p.noLang ? '' : LANG_SELECT}
 </div>${p.role ? roleBar(p.role) : ''}</header>
 ${p.role ? tabBar(p.role, p.tab) : ''}
+<script src="/js/boot-role.js"></script>
 <script type="module" src="/js/lang.js"></script>
 <script type="module" src="/js/shell.js"></script>`;
 };
@@ -28,7 +29,8 @@ for (const f of readdirSync('dist').filter((f) => f.endsWith('.html'))) {
   const p = `dist/${f}`;
   const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const raw = readFileSync(p, 'utf8');
-  const html = raw.replace(/<!--CHROME:(\w+)-->/, (_, a) => CHROME(a))
+  const html = raw.replace('</head>', '<script src="/js/boot-role.js"></script></head>')
+    .replace(/<!--CHROME:(\w+)-->/, (_, a) => CHROME(a))
     .replace('<body>', () => { const k = /<!--CHROME:(\w+)-->/.exec(raw)?.[1]; const r = PAGES[k]?.role; return `<body class="page-${k ?? 'plain'}${r ? ' role-page as-' + r : ''}${r && ROLES[r].tabs.length ? ' has-tabbar' : ''}">`; })
     // English first paint for [data-i18n] / [data-i18n-html]; web/js/lang.js swaps in the chosen language.
     .replace(/(<(\w+)\b[^>]*\sdata-i18n(-html)?="(\w+)"[^>]*>)([\s\S]*?)(<\/\2>)/g, (m, open, tag, isHtml, key, _inner, close) =>
